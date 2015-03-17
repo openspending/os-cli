@@ -1,4 +1,5 @@
 click
 goodtables
+jtskit
 datapackage
 budgetdatapackage

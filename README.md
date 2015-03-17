@@ -6,26 +6,53 @@ Based on ideas in [OSEP #4](http://labs.openspending.org/osep/04-openspending-da
 [OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html).
 
 
-# Start
+## Start
 
-## Install
+### Install
 
 Ensure you have Python 2.7, 3.3 or 3.4 installed. A virtual environment is good too.
 
+Move into your directory and:
+
 ```
-pip install git+https://github.com/openspending/etlcli-mvp.git
+# Get the code
+git clone https://github.com/openspending/etlcli-mvp.git .
+
+# Install the dependencies
+pip install -r requirements/base.txt
+
+# Additionally, if you want some extra tools for local development
+pip install -r requirements/local.txt
+
+# Additionally, if you want to run the tests
+pip install -r requirements/test.txt
 ```
 
-## Work
+### Get data
 
-* **Prerequisite**: Have a CSV file of spend data
+You'll need some spend data in CSV format. The `examples` directory contains some data to test with.
+
+
+### Start work
+
+With that done, let's get to work.
+
+The full workflow we are going for is outlined below in [Describing the workflow](#describing-the-workflow).
+
+Here we'll just outline the commands.
 
 1. `goodtables structure /path/to/file.csv`
-    * Response is a report. If success, continue. If not, see the errors, fix the CSV, and repeat.
-2. TBD: in process
+    * Ensures that the CSV is well formed (no obvious structural errors).
+    * The response is a valid JSON object, giving a report of what the
+      `goodtables structure` processor found.
+    * If `report.results` is an empty array, then no errors were detected.
+      You can proceed. If there are errors, use the report to fix them, and
+      repeat until your data source is well formed.
+2. `osmodel /path/to/file.csv --datapackage /path/to/datapackage_out --mapping my_header1==os_requiredheader1,my_header2==os_requiredheader2`
+    * In progress
 
 
-## Flow
+## Describing the workflow
 
 Flow (moving from step to step) will be manual for now.
 
@@ -39,6 +66,11 @@ data package with potentially multiple CSVs that are each run through this step.
     * Based on a sample of, say, max. 20,000 rows
 * IF well formed, can move to next step
 * IF NOT well formed, use the report from goodtables to fix the issues, and repeat this step until good.
+
+![Step 1: Valid data](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step1_valid.gif)
+
+![Step 1: Invalid data](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step1_invalid.gif)
+
 
 ### Step 2. Model the data
 
