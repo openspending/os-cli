@@ -5,6 +5,26 @@ An MVP implementation of a CLI to load data into Open Spending.
 Based on ideas in [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html) and
 [OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html).
 
+
+# Start
+
+## Install
+
+Ensure you have Python 2.7, 3.3 or 3.4 installed. A virtual environment is good too.
+
+```
+pip install git+https://github.com/openspending/etlcli-mvp.git
+```
+
+## Work
+
+* **Prerequisite**: Have a CSV file of spend data
+
+1. `goodtables structure /path/to/file.csv`
+    * Response is a report. If success, continue. If not, see the errors, fix the CSV, and repeat.
+2. TBD: in process
+
+
 ## Flow
 
 Flow (moving from step to step) will be manual for now.
