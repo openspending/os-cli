@@ -12,14 +12,18 @@ def infer_mapping(schema):
 
     """Infer an Open Spending Data Package."""
 
-    return
+    mapping = {}
+
+    return mapping
 
 
-def create(*args, **kwargs):
+def create(name, resources, mapping):
 
     """Create an Open Spending Data Package."""
 
-    return
+    descriptor = {}
+
+    return descriptor
 
 
 class OpenSpendingDataPackage(budgetdatapackage.BudgetDataPackage):
