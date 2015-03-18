@@ -8,16 +8,25 @@ import datapackage
 import budgetdatapackage
 
 
-def infer(data, name, schema):
+def infer_mapping(schema):
 
     """Infer an Open Spending Data Package."""
 
     return
 
 
+def create(*args, **kwargs):
+
+    """Create an Open Spending Data Package."""
+
+    return
+
+
 class OpenSpendingDataPackage(budgetdatapackage.BudgetDataPackage):
-    pass
+
+    """Model for loading and managing Open Spending Data Packages."""
 
 
 class OpenSpendingResource(budgetdatapackage.BudgetResource):
-    pass
+
+    """Model for loading and managing Open Spending Data Package resources."""

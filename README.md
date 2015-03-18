@@ -48,7 +48,7 @@ Here we'll just outline the commands.
     * If `report.results` is an empty array, then no errors were detected.
       You can proceed. If there are errors, use the report to fix them, and
       repeat until your data source is well formed.
-2. `osmodel /path/to/file.csv --datapackage /path/to/datapackage_out --mapping my_header1==os_requiredheader1,my_header2==os_requiredheader2`
+2. `osmodel /path/to/file.csv my-package-name --datapackage_path /path/to/my-local-datapackages --mapping my_header1==os_requiredheader1,my_header2==os_requiredheader2`
     * In progress
 
 
