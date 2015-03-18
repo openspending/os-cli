@@ -43,14 +43,23 @@ def main(data, name, datapackages, mapping, archive):
     datapackage_path = os.path.join(datapackages, name)
     datatable = goodtables.datatable.DataTable(data)
     schema = jtskit.infer(datatable.headers, datatable.get_sample(20000))
-    mapping = mapping or osdatapackage.infer_mapping(schema)
-    resources = [{'name': data, 'schema': schema}]
+
+    if mapping:
+        mapping = osdatapackage.get_mapping_from_string(mapping)
+    else:
+        mapping = mapping or osdatapackage.infer_mapping(schema)
+
+    if not all([mapping.get('id'), mapping.get('amount')]):
+        click.echo('Open Spending Data Packages require `id` and `amount` fields.')
+        return
+
+    resources = [{'data': data, 'schema': schema}]
     descriptor = osdatapackage.create(name, resources, mapping)
     data_paths = [data]
     archive_paths = []
 
-    utilities.persist_datapackage(json.dumps(descriptor, ensure_ascii=False),
-                                  datapackage_path, data_paths, archive_paths)
+    utilities.persist_datapackage(descriptor, datapackage_path, data_paths,
+                                  archive_paths)
 
     click.echo('Data has been modeled, and is now available at '
                '{0}'.format(datapackage_path))

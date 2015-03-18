@@ -15,7 +15,7 @@ def persist_datapackage(descriptor, datapackage_path, data_paths, archive_paths)
     """Persist a Data Package to a local location or remote file storage.
 
     Args:
-        * `descriptor`: datapackage.json as json formatted string
+        * `descriptor`: datapackage as dict
         * `datapackage_path`: path for writing this data package
         * `data_paths`: list of resources to write into data directory
         * `archive_paths`: list of file paths to write into archive directory
@@ -33,7 +33,7 @@ def persist_datapackage(descriptor, datapackage_path, data_paths, archive_paths)
         os.makedirs(archive_dir)
 
     with io.open(descriptor_file, mode='w+t', encoding='utf-8') as dest:
-        dest.write(json.dumps(descriptor, ensure_ascii=False))
+        dest.write(json.dumps(descriptor, ensure_ascii=False, indent=4))
 
     for filepath in data_paths:
         shutil.copy2(filepath, data_dir)

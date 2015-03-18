@@ -48,7 +48,7 @@ Here we'll just outline the commands.
     * If `report.results` is an empty array, then no errors were detected.
       You can proceed. If there are errors, use the report to fix them, and
       repeat until your data source is well formed.
-2. `osmodel /path/to/file.csv my-package-name --datapackage_path /path/to/my-local-datapackages --mapping my_header1==os_requiredheader1,my_header2==os_requiredheader2`
+2. `osmodel /path/to/file.csv my-package-name --datapackage_path /path/to/my-local-datapackages --mapping my_id=your_id,my_amount=your_amount`
     * In progress
 
 
@@ -82,6 +82,12 @@ Inspect data and:
 * Generate an OS Budget Data Package (to be defined but right now working with a minimal sketch)
 * Persist the JTS and DP in local directory
     * Perhaps we actually don't expect user to have original CSV in any particular place, and we just here write everything into a new DP-compliant directory
+
+![Step 2: Valid mapping](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step2_mapping_valid.gif)
+
+![Step 2: Invalid mapping](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step2_mapping_invalid.gif)
+
+![Step 2: Full](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step2_full.gif)
 
 ### Step 3. Validate data against model
 

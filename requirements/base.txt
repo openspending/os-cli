@@ -1,5 +1,7 @@
 click
 goodtables
 jtskit
-datapackage
-budgetdatapackage
+git+https://github.com/pwalsh/datapackage.git@feature/py3#egg=datapackage
+# datapackage
+git+https://github.com/pwalsh/budgetdatapackage.git@feature/missing-import#egg=budgetdatapackage
+# budgetdatapackage
