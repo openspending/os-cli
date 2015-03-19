@@ -45,9 +45,9 @@ def infer_mapping(schema):
 
 def get_mapping_from_string(mapping_string):
 
-    """Get a mapping from a mapping string.
+    """Get an openspending field mapping from a mapping string.
 
-    format: my_id=your_id,my_other_id=your+other_id
+    format: os_key=my_key,os_key=my_key
 
     """
 
@@ -59,6 +59,36 @@ def get_mapping_from_string(mapping_string):
         mapping[k] = v
 
     return mapping
+
+
+def get_metadata(mapping_string, datapath):
+
+    """Get metadata for a resource.
+
+    format: key=value,key=value
+
+    """
+
+    metadata = {}
+
+    if mapping_string:
+        _args = mapping_string.split(',')
+        for _a in _args:
+            k, v = _a.split('=')
+            metadata[k] = v
+
+    # TODO: TEMPORARY!!! do not have a default, user must supply
+    if not metadata.get('currency'):
+        metadata['currency'] = 'USD'
+
+    # TODO: TEMPORARY!!! do not have a default, user must supply
+    if not metadata.get('granularity'):
+        metadata['granularity'] = 'aggregated'
+
+    if not metadata.get('name'):
+        metadata['name'] = os.path.splitext(os.path.basename(datapath))[0]
+
+    return metadata
 
 
 def create(name, resources, mapping):
@@ -79,13 +109,14 @@ class OpenSpendingResource(budgetdatapackage.BudgetResource):
     """Model for loading and managing Open Spending Data Package resources."""
 
     # temp override
-    REQUIRED = (('url', 'path', 'data'),)
+    REQUIRED = (('url', 'path', 'data'),'currency', 'granularity')
 
 
 class OpenSpendingDataPackage(datapackage.DataPackage):
 
     """Model for loading and managing Open Spending Data Packages."""
 
+    REQUIRED = ('name',)
     RESOURCE_CLASS = OpenSpendingResource
 
     @property

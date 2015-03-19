@@ -19,8 +19,9 @@ from . import utilities
 @click.argument('name')
 @click.option('--datapackages')
 @click.option('--mapping')
+@click.option('--metadata')
 @click.option('--archive')
-def main(data, name, datapackages, mapping, archive):
+def main(data, name, datapackages, mapping, metadata, archive):
 
     """Make an Open Spending Data Package from a CSV data source.
 
@@ -29,6 +30,7 @@ def main(data, name, datapackages, mapping, archive):
         * `name`: name of this data package
         * `datapackages`: path to directory for storing this data package
         * `mapping`: a mapping pattern of fields in source > fields in OSDP
+        * `metadata`: a mapping pattern of meta data for this data source
         * `archive`: Path to archival material for this data package
 
     """
@@ -49,11 +51,22 @@ def main(data, name, datapackages, mapping, archive):
     else:
         mapping = mapping or osdatapackage.infer_mapping(schema)
 
+    metadata = osdatapackage.get_metadata(metadata, data)
+
     if not all([mapping.get('id'), mapping.get('amount')]):
         click.echo('Open Spending Data Packages require `id` and `amount` fields.')
         return
 
-    resources = [{'data': data, 'schema': schema}]
+    if not all([metadata.get('currency'), metadata.get('granularity')]):
+        click.echo('Open Spending Data Package Resources require `currency` and `granularity` fields.')
+        return
+
+    resource = {
+        'data': data,
+        'schema': schema,
+    }
+    resource.update(metadata)
+    resources = [resource]
     descriptor = osdatapackage.create(name, resources, mapping)
     data_paths = [data]
     archive_paths = []
