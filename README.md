@@ -74,14 +74,16 @@ data package with potentially multiple CSVs that are each run through this step.
 
 ### Step 2. Model the data
 
-Inspect data and:
-
-* Check that the CSV is in some datapackage-compatible directory
-* Infer a JSON Table Schema
-* Create a mapping of given fields to required fields (eg: amounts, ids)
-* Generate an OS Budget Data Package (to be defined but right now working with a minimal sketch)
-* Persist the JTS and DP in local directory
-    * Perhaps we actually don't expect user to have original CSV in any particular place, and we just here write everything into a new DP-compliant directory
+* User has a CSV of data on some local path
+* User can also pass path to archive of data for this data package
+* User can pass in path to her data packages directory, otherwise we create one in HOME
+* If CSV does not have minimal required fields, needs to pass a mapping
+* User needs to also pass required metadata (eg: currency)
+* From the CSV data, infer a JSON Table Schema
+* For the data package, create a mapping of given fields to required fields (eg: amounts, ids)
+* For the data package, create additional meta data (name, currency)
+* Generate an OS Budget Data Package
+* Persist the data package (descriptor + data + archive) into the data packages directory under name
 
 ![Step 2: Valid mapping](https://dl.dropboxusercontent.com/u/13029373/okfn/os/step2_mapping_valid.gif)
 
