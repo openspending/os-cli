@@ -40,7 +40,6 @@ With that done, let's get to work.
 
 Use the Good Tables CLI to ensure there are no obvious structural errors in your resource.
 
-If you do have errors, you'll get a report simialr to the one below: use it to fix the errors, and
 ```
 you@machine:~$ goodtables structure examples/data_invalid.csv
 
@@ -61,10 +60,9 @@ RESULTS.
 +-------------+-----------------------------------------------------------------------+---------------+---------------+
 ```
 
-
 If you do have errors, you'll get a report similar to that above.
 
-Use the information to fix the errors until you get something like:
+Use that information to fix the errors until you get something like:
 
 ```
 you@machine:~$ goodtables structure examples/data_valid.csv
@@ -86,4 +84,34 @@ Use the `osmodel` CLI to infer a [JSON Table Schema](http://dataprotocols.org/js
 
 ```
 you@machine:~$ osmodel /examples/data_valid.csv my-package --datapackage_path /path/to/my-local-datapackages --mapping id=my_id,amount=my_amount
+```
+
+### Step 3. Validate the data
+
+Now that we have a valid data package, including a schema for our data, we want to use this information to check the data in our file.
+
+This is done with the `osensure` CLI.
+
+```
+you@machine:~$ osensure /examples/test_data_package
+```
+
+### Step 4. Authenticate with Open Spending
+
+The previous steps are completely local.
+
+In order to interact with an Open Spending service, we need to authenticate ourselves.
+
+The next step is to upload our new data package. So, in order to do this, we need to authenticate.
+
+```
+you@machine:~$ osauth me@example.com
+```
+
+### Step 5. Upload to the Open Spending data store
+
+Ok, time to upload!
+
+```
+you@machine:~$ osstore /examples/test_data_package
 ```
