@@ -109,7 +109,7 @@ class OpenSpendingResource(budgetdatapackage.BudgetResource):
     """Model for loading and managing Open Spending Data Package resources."""
 
     # temp override
-    REQUIRED = (('url', 'path', 'data'),'currency', 'granularity')
+    REQUIRED = (('url', 'path', 'data'), 'currency', 'granularity')
 
 
 class OpenSpendingDataPackage(datapackage.DataPackage):

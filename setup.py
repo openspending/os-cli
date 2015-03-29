@@ -38,6 +38,9 @@ setup(
     entry_points={
         'console_scripts': [
             'osmodel = osmodel.cli:main',
+            'osensure = osensure.cli:main',
+            'osauth = osauth.cli:main',
+            'osstore = osstore.cli:main'
         ]
     }
 )
