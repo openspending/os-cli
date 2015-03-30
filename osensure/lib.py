@@ -14,7 +14,9 @@ def display_report(reports):
                 'column_index', 'column_name', 'result_level']
 
     for report in reports:
-        _reports.append(report.generate('txt', exclude=_exclude))
+        generated = report.generate('txt', exclude=_exclude)
+        modified = generated.split('###')
+        _reports.append(modified[1])
     return '\n\n'.join(_reports)
 
 
