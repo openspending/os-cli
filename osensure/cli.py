@@ -31,6 +31,7 @@ def main(datapackage):
     GUIDE_URL = 'https://github.com/openspending/etlcli-mvp/blob/master/osensure/guide.md'
     DESCRIPTOR = 'datapackage.json'
 
+    datapackage = os.path.abspath(datapackage)
     ensure = lib.Ensure(datapackage)
     success = ensure.run()
 

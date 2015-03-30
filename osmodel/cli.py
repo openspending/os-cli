@@ -62,7 +62,7 @@ def main(data, name, datapackages, mapping, metadata, archive):
         return
 
     resource = {
-        'data': data,
+        'path': data,
         'schema': schema,
     }
     resource.update(metadata)

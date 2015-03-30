@@ -10,8 +10,11 @@ from goodtables import pipeline
 def display_report(reports):
     """Return an output string of text tables."""
     _reports = []
+    _exclude = ['result_context', 'processor', 'row_name', 'result_category',
+                'column_index', 'column_name', 'result_level']
+
     for report in reports:
-        _reports.append(report.generate('txt'))
+        _reports.append(report.generate('txt', exclude=_exclude))
     return '\n\n'.join(_reports)
 
 
@@ -24,19 +27,17 @@ class Ensure(object):
     """
 
     def __init__(self, datapackage):
-        self.pipeline_options = {'fail_fast': True, 'processors': ('schema',),
-                                 'post_task': self._collector}
-        self.batch = pipeline.Batch(datapackage, source_type='dp',
-                                    pipeline_options=self.pipeline_options)
+        self.pipeline_options = {'processors': ('schema',)}
+        self.batch = pipeline.Batch(datapackage, source_type='datapackage',
+                                    pipeline_options=self.pipeline_options,
+                                    pipeline_post_task=self._collector)
         self.reports = []
-        self.success = True
+        self.success = False
 
     def run(self):
-        self.batch.run()
-        if any([report.count for report in self.reports]):
-            self.success = False
+        self.success = self.batch.run()
         return self.success
 
     def _collector(self, pipeline):
         """Collect reports."""
-        self.reports.append(pipeline.generated_report)
+        self.reports.append(pipeline.report)
