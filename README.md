@@ -160,15 +160,19 @@ This configuration file contains a JSON object.
 For specifics, see the section below.
 
 ```
-you@machine:~$ openspending auth --api_key API_KEY
+you@machine:~$ openspending auth login
+
+# or
+
+you@machine:~$ openspending auth logout
 ```
 
 ### Step 5. Upload to the Open Spending data store
 
-Ok, time to upload!
+Use the `upload` subcommand to upload a data package to Open Spending.
 
 ```
-you@machine:~$ osstore /examples/test_data_package
+you@machine:~$ openspending upload /examples/test_data_package
 ```
 
 ### Configuration
