@@ -8,6 +8,7 @@ import os
 import io
 import json
 import shutil
+import copy
 import goodtables
 import jtskit
 from .. import osdatapackage
@@ -21,6 +22,8 @@ class Modeler(object):
                  mapping=None, metadata=None, archive=None):
 
         self.data_source = data
+        # this needs to be adjusted relative to destination
+        self.data_path = os.path.basename(self.data_source)
         self.schema_source = schema
         self.datatable = self.get_datatable()
         self.schema = schema or self.infer_schema()
@@ -51,7 +54,7 @@ class Modeler(object):
             'name': '',
             'title': '',
             'description': '',
-            'path': self.data_source,
+            'path': self.data_path,
             'schema': self.schema
         }
         resource.update(self.metadata)
@@ -79,7 +82,8 @@ class Modeler(object):
         """Infer an Open Spending Data Package."""
 
         mapping = {}
-        schema_model = jtskit.models.JSONTableSchema(self.schema)
+        _schema = copy.deepcopy(self.schema)
+        schema_model = jtskit.models.JSONTableSchema(_schema)
 
         if schema_model.has_field('id'):
             mapping['id'] = 'id'
@@ -109,23 +113,24 @@ class Modeler(object):
     def run(self):
 
         descriptor_path = os.path.join(self.destination, 'datapackage.json')
-        data_dir = os.path.join(self.destination, 'data')
-        archive_dir = os.path.join(self.destination, 'archive')
 
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
+        # data_dir = os.path.join(self.destination, 'data')
+        # archive_dir = os.path.join(self.destination, 'archive')
 
-        if not os.path.exists(archive_dir):
-            os.makedirs(archive_dir)
+        # if not os.path.exists(data_dir):
+        #     os.makedirs(data_dir)
+
+        # if not os.path.exists(archive_dir):
+        #     os.makedirs(archive_dir)
 
         with io.open(descriptor_path, mode='w+t', encoding='utf-8') as f:
             f.write(json.dumps(self.descriptor, ensure_ascii=False, indent=4))
 
-        if self.archive:
-            for filepath in os.listdir(self.archive):
-                shutil.copy2(f, archive_dir)
+        # if self.archive:
+        #     for filepath in os.listdir(self.archive):
+        #         shutil.copy2(f, archive_dir)
 
-        if not self.persist_in_place:
-            shutil.copy2(self.data_source, data_dir)
+        # if not self.persist_in_place:
+        #     shutil.copy2(self.data_source, data_dir)
 
         return True
