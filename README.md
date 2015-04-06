@@ -113,7 +113,7 @@ Use the `makemodel` subcommand to model the data.
 
 Modeling the data involves two related steps:
 
-* Creating an [Open Spending Data Package]((https://github.com/openspending/budget-data-package/blob/master/specification.md)
+* Creating an [Open Spending Data Package](http://labs.openspending.org/osep/04-openspending-data-package.html)
 * Inferring a schema for the data resources therein (Data Packages use [JSON Table Schema](http://dataprotocols.org/json-table-schema/)).
 
 ```
