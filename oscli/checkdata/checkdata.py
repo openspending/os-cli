@@ -4,8 +4,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import io
+import os
 from goodtables import pipeline
 
+
+GUIDEPATH = os.path.join(os.path.dirname(__file__), 'guide.md')
+
+
+def print_guide():
+    with io.open(GUIDEPATH, mode='r+t', encoding='utf-8') as stream:
+        output = stream.read()
+    return output
 
 def display_report(reports):
     """Return an output string of text tables."""
@@ -20,13 +30,9 @@ def display_report(reports):
     return '\n\n'.join(_reports)
 
 
-class Ensure(object):
+class Checker(object):
 
-    """Ensure that a data package is valid.
-
-    So, ensure that each resource in a data package are valid.
-
-    """
+    """Check that data resources in a data package are valid."""
 
     def __init__(self, datapackage):
         self.pipeline_options = {'processors': ('schema',)}

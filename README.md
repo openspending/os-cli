@@ -1,9 +1,15 @@
-# ETL CLI
+# OSCLI
 
-An MVP implementation of a CLI to load data into Open Spending.
+The is a minimal, command line implementation to load data into an Open Spending
+flat file datastore.
 
-Based on ideas in [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html) and
-[OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html).
+**This is not compatible with the current version of Open Spending**.
+
+Rather, it is based on ideas in the following Open Spending Enhancement
+Proposals:
+
+* [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html)
+* [OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html)
 
 
 ## Start
@@ -16,7 +22,7 @@ Move into your directory and:
 
 ```
 # Get the code
-git clone https://github.com/openspending/etlcli-mvp.git .
+git clone https://github.com/openspending/oscli.git .
 
 # Install the dependencies
 pip install -r requirements/base.txt
@@ -28,9 +34,31 @@ pip install -r requirements/local.txt
 pip install -r requirements/test.txt
 ```
 
+Now, let's install the `openspending` CLI:
+
+```
+python setup.py install
+```
+
+You now have `openspending` and `os` (an alias) on your path.
+
+See the help:
+
+```
+openspending --help
+```
+
+### Additional configuration
+
+If you are testing the upload functionality, you need an AWS account, a bucket
+on S3, and an AWS key pair. See the file `oscli/_mock/example.mock.config` and
+copy it to `oscli/_mock/mock.config` with your information.
+
 ### Get data
 
-You'll need some spend data in CSV format. The `examples` directory contains some data to test with.
+You'll need some spend data in CSV format.
+
+The `examples` directory contains some data to test with.
 
 ### Start work
 
@@ -38,7 +66,8 @@ With that done, let's get to work.
 
 #### Step 1. Ensure resources are well formed
 
-Use the Good Tables CLI to ensure there are no obvious structural errors in your resource.
+Use the Good Tables CLI to ensure there are no obvious structural errors in
+your resource.
 
 ```
 you@machine:~$ goodtables structure examples/data_invalid.csv
@@ -80,32 +109,58 @@ No results were generated.
 
 #### Step 2. Model the data
 
-Use the `osmodel` CLI to infer a [JSON Table Schema](http://dataprotocols.org/json-table-schema/) from the data, create an OpenSpending-compatible Budget [Data Package](https://github.com/openspending/budget-data-package/blob/master/specification.md).
+Use the `makemodel` subcommand to model the data.
+
+Modeling the data involves two related steps:
+
+* Creating an [Open Spending Data Package]((https://github.com/openspending/budget-data-package/blob/master/specification.md)
+* Inferring a schema for the data resources therein (Data Packages use [JSON Table Schema](http://dataprotocols.org/json-table-schema/)).
 
 ```
-you@machine:~$ osmodel /examples/data_valid.csv my-package --datapackage_path /path/to/my-local-datapackages --mapping id=my_id,amount=my_amount
+you@machine:~$ openspending makemodel /examples/data_valid.csv --mapping id=my_id,amount=my_amount
 ```
 
-### Step 3. Validate the data
+### Step 3. Check the Data Package
 
-Now that we have a valid data package, including a schema for our data, we want to use this information to check the data in our file.
+Use the `checkpackage` subcommand to ensure that the Data Package descriptor is valid.
 
-This is done with the `osensure` CLI.
+Now we actually have a data package and an initial schema for our data,
+let's check that our data package descriptor is a valid Open Spending
+Data Package (which it obviously will be if it was created at step 2...
+but let's do it anyway).
 
 ```
-you@machine:~$ osensure /examples/test_data_package
+you@machine:~$ openspending checkpackage /examples/test_data_package
+```
+
+### Step 4. Check the Data Schema
+
+Use the `checkdata` subcommand to ensure that the data conforms to the schema.
+
+```
+you@machine:~$ openspending checkdata /examples/test_data_package
 ```
 
 ### Step 4. Authenticate with Open Spending
+
+Use the `auth` subcommand to authenticate with Open Spending.
 
 The previous steps are completely local.
 
 In order to interact with an Open Spending service, we need to authenticate ourselves.
 
-The next step is to upload our new data package. So, in order to do this, we need to authenticate.
+The next step is to upload our new data package to the datastore.
+
+So, we need to authenticate.
+
+This is the first step that uses the .openspendingrc file.
+
+This configuration file contains a JSON object.
+
+For specifics, see the section below.
 
 ```
-you@machine:~$ osauth me@example.com
+you@machine:~$ openspending auth --api_key API_KEY
 ```
 
 ### Step 5. Upload to the Open Spending data store
@@ -115,3 +170,64 @@ Ok, time to upload!
 ```
 you@machine:~$ osstore /examples/test_data_package
 ```
+
+### Configuration
+
+#### .openspendingrc
+
+An `.openspendingrc` file can be used to persist configuration settings.
+
+Commands that read settings from an `.openspendingrc` file use the following logic to resolve:
+
+* Look for an `.openspendingrc` file in the current working directory
+* Look for an `.openspendingrc` file in the current user's home directory
+
+Additionally, the CLI command may support passing the value(s) as options.
+
+Such options always override the same found in a configuration file.
+
+An example file:
+
+```
+# .openspendingrc
+
+{
+    "username": "pwalsh",
+    "token": "SOME_TOKEN_FROM_AUTH_SERVICE",
+    "storage_tokens": {
+        "datapackage_name": "TEMP_UPLOAD_KEY"
+    }
+}
+```
+
+### Mock services
+
+Seeing as this is still at proof-of-concept stage, the code contains some
+basic mocks for services that it requires.
+
+#### base.OpenSpendingService
+
+`_mock.base.OpenSpendingService` is the base service that others inherit from.
+
+It provides two methods:
+
+* `gatekeeper`: accepts a token as an argument, and returns True or False
+based on whether the token is valid. Currently wraps `_accept_token`
+* `_accept_token`: accepts a token as an argument, and returns True or False
+based on whether the token is valid.
+
+#### AuthService
+
+`_mock.AuthService` provides services for login and logout.
+
+* `login`: Return a dummy token. Currently, having a token indicates the user
+is authenticated. In a proper implementation, tokens would be signed, have
+expiry, and so on.
+* `logout`: Logs out a user by invalidating the user's token. Currently, this
+means removing the token from .openspendingrc.
+
+#### StorageService
+
+`_mock.StorageService` provides services for interacting with Open Spending
+file storage. This includes connecting to a bucket, and providing methods to
+manage uploads of data packages.

@@ -14,3 +14,5 @@ shippable/*
 /docs/_build
 /docs/_static
 /docs/_templates
+
+mock.config

@@ -4,8 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import cli
-from . import osdatapackage
+from .auth import Auth
 
 
-__all__ = ['cli', 'osdatapackage']
+__all__ = ['Auth']

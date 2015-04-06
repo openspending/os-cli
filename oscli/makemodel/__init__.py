@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import cli
+from .makemodel import Modeler
 
 
-__all__ = ['cli']
+__all__ = ['Modeler']
