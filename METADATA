@@ -1,7 +1,7 @@
 {
     "version": "0.1.0-alpha",
     "description": "A command line interface to load data into Open Spending.",
-    "name": "oscli",
+    "name": "OSCLI",
     "slug": "oscli",
     "author": "Open Knowledge Foundation",
     "author_email": "info@okfn.org",
