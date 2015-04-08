@@ -51,7 +51,6 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules'
 ]
 
-
 setup(
     name=metadata['name'],
     version=metadata['version'],

@@ -1,9 +1,9 @@
 click
 goodtables
 jtskit
-git+https://github.com/pwalsh/datapackage.git@feature/py3#egg=datapackage
+-e git+git@github.com:pwalsh/datapackage.git@feature/enhancements#egg=datapackage
 # datapackage
-git+https://github.com/pwalsh/budgetdatapackage.git@feature/py3#egg=budgetdatapackage
+-e git+git@github.com:pwalsh/budgetdatapackage.git@feature/py3#egg=budgetdatapackage
 # budgetdatapackage
 tabulate>=0.7.4
 boto
