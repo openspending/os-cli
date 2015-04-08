@@ -51,12 +51,12 @@ class TestCLI(base.BaseTestCase):
         result = result.decode('utf-8').rstrip('\n')
         self.assertEqual(result, config.get('token', ''))
 
-    def test_upload(self):
+    # def test_upload(self):
 
-        c = ['python', 'oscli/main.py', 'upload', self.dp_valid]
-        result = subprocess.check_output(c)
+    #     c = ['python', 'oscli/main.py', 'upload', self.dp_valid]
+    #     result = subprocess.check_output(c)
 
-        self.assertTrue(result)
+    #     self.assertTrue(result)
 
     def test_makemodel_valid(self):
 
@@ -72,9 +72,9 @@ class TestCLI(base.BaseTestCase):
 
         self.assertTrue(result)
 
-    def test_checkpackage(self):
+    def test_checkmodel(self):
 
-        c = ['python', 'oscli/main.py', 'checkpackage', self.dp_valid]
+        c = ['python', 'oscli/main.py', 'checkmodel', self.dp_valid]
         result = subprocess.check_output(c)
 
         self.assertTrue(result)

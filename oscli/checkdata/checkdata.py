@@ -9,14 +9,6 @@ import os
 from goodtables import pipeline
 
 
-GUIDEPATH = os.path.join(os.path.dirname(__file__), 'guide.md')
-
-
-def print_guide():
-    with io.open(GUIDEPATH, mode='r+t', encoding='utf-8') as stream:
-        output = stream.read()
-    return output
-
 def display_report(reports):
     """Return an output string of text tables."""
     _reports = []

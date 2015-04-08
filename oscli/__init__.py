@@ -5,12 +5,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from . import checkdata
-from . import checkpackage
+from . import checkmodel
 from . import makemodel
 from . import auth
 from . import upload
 from . import osdatapackage
 
 
-__all__ = ['checkdata', 'checkpackage', 'makemodel', 'auth', 'upload',
+__all__ = ['checkdata', 'checkmodel', 'makemodel', 'auth', 'upload',
            'osdatapackage']

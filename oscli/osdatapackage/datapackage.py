@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
 import json
 import datapackage
 from datapackage import compat
@@ -91,15 +90,3 @@ class OpenSpendingDataPackage(datapackage.DataPackage):
                 'openspending must be a dict, not {1}'.format(type(value)))
 
         self['openspending'] = value
-
-    def as_dict(self):
-        """Override base to deal with resources."""
-        _resources = [{k: v for k, v in r.items() if
-                       k not in r.SERIALIZE_EXCLUDES}
-                      for r in self.resources]
-        as_dict = super(OpenSpendingDataPackage, self).as_dict()
-        as_dict['resources'] = _resources
-        return as_dict
-
-    def as_json(self):
-        return json.dumps(self.as_dict(), ensure_ascii=False, indent=4)

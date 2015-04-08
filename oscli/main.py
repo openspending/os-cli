@@ -8,7 +8,7 @@ import os
 import json
 import click
 from oscli import makemodel as _makemodel
-from oscli import checkpackage as _checkpackage
+from oscli import checkmodel as _checkmodel
 from oscli import checkdata as _checkdata
 from oscli import auth as _auth
 from oscli import upload as _upload
@@ -112,7 +112,7 @@ def makemodel(data, mapping, metadata, archive):
 
 @cli.command()
 @click.argument('datapackage')
-def checkpackage(datapackage):
+def checkmodel(datapackage):
 
     """Check an Open Spending Data Package descriptor."""
 
@@ -120,7 +120,7 @@ def checkpackage(datapackage):
     MSG_ERROR = ('While checking the data, we found some found some '
                  'issues: {0}')
 
-    service = _checkpackage.Checker(datapackage)
+    service = _checkmodel.Checker(datapackage)
     service.run()
     if service.success:
         click.echo(click.style(MSG_SUCCESS))
@@ -130,7 +130,7 @@ def checkpackage(datapackage):
 
 @cli.command()
 @click.argument('datapackage')
-@click.option('--interactive', is_flag=False)
+@click.option('--interactive', is_flag=True)
 def checkdata(datapackage, interactive):
 
     """Check data in an Open Spending Data Package descriptor."""
@@ -148,7 +148,7 @@ def checkdata(datapackage, interactive):
                 '(Opens the file in your editor)')
     MSG_END_CONTINUE = ('\nThat is all for now. Once you have made changes to\n'
                         'your data and/or schema, try running the ensure process again.')
-    GUIDE_URL = 'https://github.com/openspending/etlcli-mvp/blob/master/osensure/guide.md'
+    GUIDE_URL = 'https://github.com/openspending/oscli-poc/blob/master/oscli/checkdata/guide.md'
     DESCRIPTOR = 'datapackage.json'
 
     datapackage = os.path.abspath(datapackage)
@@ -176,7 +176,8 @@ def checkdata(datapackage, interactive):
         else:
             click.echo(click.style(report, fg='blue'))
             click.echo(click.style(MSG_CONTEXT, fg='yellow'))
-            click.echo(_checkdata.print_guide())
+            click.echo('Read the guide for help:\n')
+            click.echo(GUIDE_URL)
 
         click.echo(click.style(MSG_END_CONTINUE, fg='green'))
 

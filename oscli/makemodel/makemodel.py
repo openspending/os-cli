@@ -60,9 +60,10 @@ class Modeler(object):
         resource.update(self.metadata)
 
         package = {
-            'name': 'ADD A NAME',
-            'title': '',
-            'description': '',
+            'name': 'your-package-name',
+            'owner': 'username',
+            'title': 'Your Package Name',
+            'description': 'A friendly description of your Data Package.',
             'resources': [resource],
             'openspending': {
                 'mapping': self.mapping

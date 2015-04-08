@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
 import datapackage
 import budgetdatapackage
 from datapackage import compat
@@ -38,4 +37,3 @@ class OpenSpendingResource(budgetdatapackage.BudgetResource):
                      'licenses': list}
 
     REQUIRED = (('url', 'path', 'data'), 'currency', 'granularity')
-    SERIALIZE_EXCLUDES = ('datapackage_uri', 'is_local')

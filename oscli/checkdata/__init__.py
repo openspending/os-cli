@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .checkdata import Checker, display_report, print_guide
+from .checkdata import Checker, display_report
 
 
-__all__ = ['Checker', 'display_report', 'print_guide']
+__all__ = ['Checker', 'display_report']

@@ -120,9 +120,11 @@ Modeling the data involves two related steps:
 you@machine:~$ openspending makemodel /examples/data_valid.csv --mapping id=my_id,amount=my_amount
 ```
 
-### Step 3. Check the Data Package
+**Note:** If your data features both `id` and `amount` fields, then you are not required to provide a mapping via the command line.
 
-Use the `checkpackage` subcommand to ensure that the Data Package descriptor is valid.
+### Step 3. Check the model
+
+Use the `checkmodel` subcommand to ensure that the Data Package descriptor is valid.
 
 Now we actually have a data package and an initial schema for our data,
 let's check that our data package descriptor is a valid Open Spending
@@ -130,7 +132,7 @@ Data Package (which it obviously will be if it was created at step 2...
 but let's do it anyway).
 
 ```
-you@machine:~$ openspending checkpackage /examples/test_data_package
+you@machine:~$ openspending checkmodel /examples/test_data_package
 ```
 
 ### Step 4. Check the Data Schema

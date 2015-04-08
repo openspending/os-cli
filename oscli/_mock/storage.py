@@ -6,11 +6,27 @@ from __future__ import unicode_literals
 
 import os
 import io
+import json
 import hashlib
 import boto
 from . import base
 from .. import osdatapackage
 from .. import exceptions
+
+
+MOCK_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mock.config')
+
+
+def set_mock_data():
+    with io.open(MOCK_CONFIG, mode='r+t', encoding='utf-8') as stream:
+        config = json.loads(stream.read())
+
+    os.environ['AWS_STORAGE_BUCKET_NAME'] = config['AWS_STORAGE_BUCKET_NAME']
+    os.environ['AWS_ACCESS_KEY_ID'] = config['AWS_ACCESS_KEY_ID']
+    os.environ['AWS_SECRET_ACCESS_KEY'] = config['AWS_SECRET_ACCESS_KEY']
+
+
+# set_mock_data()
 
 
 def get_checksum(filepath, blocksize=65536):
