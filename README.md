@@ -12,7 +12,7 @@ Proposals:
 * [OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html)
 
 
-## Start
+## Setup
 
 ### Install
 
@@ -48,11 +48,48 @@ See the help:
 openspending --help
 ```
 
-### Additional configuration
+### Configuration
 
-If you are testing the upload functionality, you need an AWS account, a bucket
-on S3, and an AWS key pair. See the file `oscli/_mock/example.mock.config` and
-copy it to `oscli/_mock/mock.config` with your information.
+#### User settings
+
+The `openspending` CLI uses an `.openspendingrc` file to manage various settings
+related to you, the user. When using the CLI, it will look for an
+`.openspendingrc` file in one of two places, in order:
+
+* The current working directory
+* The executing user's $HOME
+* If not found, an error will be raised
+
+```
+# .openspendingrc
+
+{
+    "username": "pwalsh",
+    "token": "SOME_TOKEN_FROM_AUTH_SERVICE",
+    "storage_tokens": {
+        "datapackage_name": "TEMP_UPLOAD_KEY"
+    }
+}
+```
+
+#### Mock services
+
+The code has some mock interfaces for services that do not exist yet. One is the
+storage service that will provide access to the Open Spending datastore.
+
+Therefore, if you are testing the upload functionality, you will need to do some
+additional configuration:
+
+* Get an AWS account
+* Get an AWS key pair
+* Create a bucket for Open Spending data in your AWS account
+* Export the following environment variables:
+
+```
+OPENSPENDING_STORAGE_BUCKET_NAME={YOUR_AWS_BUCKET_NAME}
+OPENSPENDING_ACCESS_KEY_ID={YOUR_AWS_ACCESS_KEY_ID}
+OPENSPENDING_SECRET_ACCESS_KEY={YOUR_AWS_SECRET_ACCESS_KEY}
+```
 
 ### Get data
 
@@ -60,11 +97,16 @@ You'll need some spend data in CSV format.
 
 The `examples` directory contains some data to test with.
 
-### Start work
+## Using the CLI
 
-With that done, let's get to work.
+Once you have fully configured your setup, we can get to work.
 
-#### Step 1. Ensure resources are well formed
+`openspending` can be used with new data in the following sequence.
+
+Alternatively, you can start at any step if you know your data conforms
+with the previous steps.
+
+### Step 1. Ensure resources are well formed
 
 Use the Good Tables CLI to ensure there are no obvious structural errors in
 your resource.
@@ -107,7 +149,7 @@ RESULTS.
 No results were generated.
 ```
 
-#### Step 2. Model the data
+### Step 2. Model the data
 
 Use the `makemodel` subcommand to model the data.
 
@@ -169,7 +211,7 @@ you@machine:~$ openspending auth login
 you@machine:~$ openspending auth logout
 ```
 
-### Step 5. Upload to the Open Spending data store
+### Step 5. Upload to the Open Spending datastore
 
 Use the `upload` subcommand to upload a data package to Open Spending.
 
@@ -177,36 +219,8 @@ Use the `upload` subcommand to upload a data package to Open Spending.
 you@machine:~$ openspending upload /examples/test_data_package
 ```
 
-### Configuration
 
-#### .openspendingrc
-
-An `.openspendingrc` file can be used to persist configuration settings.
-
-Commands that read settings from an `.openspendingrc` file use the following logic to resolve:
-
-* Look for an `.openspendingrc` file in the current working directory
-* Look for an `.openspendingrc` file in the current user's home directory
-
-Additionally, the CLI command may support passing the value(s) as options.
-
-Such options always override the same found in a configuration file.
-
-An example file:
-
-```
-# .openspendingrc
-
-{
-    "username": "pwalsh",
-    "token": "SOME_TOKEN_FROM_AUTH_SERVICE",
-    "storage_tokens": {
-        "datapackage_name": "TEMP_UPLOAD_KEY"
-    }
-}
-```
-
-### Mock services
+## Mock services
 
 Seeing as this is still at proof-of-concept stage, the code contains some
 basic mocks for services that it requires.
