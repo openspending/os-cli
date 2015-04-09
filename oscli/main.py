@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import io
 import json
 import click
 from oscli import makemodel as _makemodel
@@ -44,25 +45,24 @@ def auth(action):
     """Authenticate with the Open Spending auth service."""
 
     service = _auth.Auth()
-
-    if action == 'login':
-        token = service.login()
-        click.echo(token)
-
-    else:
-        success = service.logout()
-        click.echo(success)
+    result = getattr(service, action)()
+    click.echo(result)
 
 
 @cli.command()
-@click.argument('datapackage')
+@click.argument('datapackage', default='.', type=click.Path(exists=True))
 def upload(datapackage):
 
     """Upload an Open Spending Data Package to storage. Requires auth."""
+    _valid, _msg = utilities.is_datapackage(datapackage)
+
+    if not _valid:
+        click.echo(click.style(_msg, fg='red'))
+        return
 
     service = _upload.Upload()
 
-    service.run()
+    service.run(datapackage)
     click.echo(click.style('Done', fg='green'))
 
 
