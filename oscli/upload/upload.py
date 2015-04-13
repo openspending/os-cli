@@ -74,7 +74,7 @@ class Upload(object):
 
     def upload(self, payload):
         """Upload a datapackage to an Open Spending data store."""
-        import ipdb;ipdb.set_trace()
+
         for _file in payload:
             files = {'file': io.open(_file['local'], mode='rb+')}
             response = requests.post(_file['upload_to'], files=files)
