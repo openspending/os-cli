@@ -10,22 +10,12 @@ from .. import utilities
 
 class Auth(object):
 
-    def __init__(self):
+    def __init__(self, config=None):
+        self.config = config or utilities.read_config()
         self.backend = _mock.AuthService()
 
-    def login(self):
-        """Login the user."""
-
-        token = self.backend.login()
+    def get_token(self):
+        """Get a token."""
+        token = self.backend.get_token(self.config['api_key'])
         utilities.write_config(**{'token': token})
-
         return token
-
-    def logout(self):
-        """Logout the user."""
-
-        success = self.backend.logout()
-        if success:
-            utilities.write_config(**{'token': ''})
-
-        return ''

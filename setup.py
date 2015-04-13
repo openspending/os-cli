@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 
 import os
 import io
@@ -27,6 +27,7 @@ with io.open(METADATA_PATH, mode='r+t', encoding='utf-8') as stream:
 
 dependencies = [
     'click',
+    'requests',
     'goodtables',
     'jtskit',
     'datapackage',

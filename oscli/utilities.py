@@ -96,3 +96,23 @@ def ensure_config(location='home'):
     if _path:
         with io.open(_path, mode='r+t', encoding='utf-8') as stream:
             return json.loads(stream.read())
+
+
+def is_datapackage(_path):
+    """Ensure that _path is a Data Package."""
+
+    descriptor_name = 'datapackage.json'
+
+    if not os.path.isdir(_path):
+        MSG = ('The path is not a directory, and therefore not a valid '
+               'Data Package.')
+        return False, MSG
+
+    descriptor = os.path.join(_path, descriptor_name)
+    if not os.path.exists(descriptor):
+        MSG = ('The directory does not include a {0}, and so is not a valid '
+               'Data Package.'.format(descriptor_name))
+        return False, MSG
+
+    MSG = ('The path is a valid Data Package')
+    return True, MSG

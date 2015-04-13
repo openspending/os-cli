@@ -64,11 +64,8 @@ related to you, the user. When using the CLI, it will look for an
 # .openspendingrc
 
 {
-    "username": "pwalsh",
-    "token": "SOME_TOKEN_FROM_AUTH_SERVICE",
-    "storage_tokens": {
-        "datapackage_name": "TEMP_UPLOAD_KEY"
-    }
+    "api_key": "",
+    "token": "SOME_TOKEN_FROM_AUTH_SERVICE"
 }
 ```
 
@@ -204,11 +201,7 @@ This configuration file contains a JSON object.
 For specifics, see the section below.
 
 ```
-you@machine:~$ openspending auth login
-
-# or
-
-you@machine:~$ openspending auth logout
+you@machine:~$ openspending auth get_token
 ```
 
 ### Step 5. Upload to the Open Spending datastore

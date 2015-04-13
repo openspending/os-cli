@@ -18,12 +18,11 @@ from oscli import utilities
 
 @click.group()
 def cli():
-    pass
+    """Open Spending CLI."""
 
 
 @cli.command()
 def version():
-
     """Display the version and exit."""
 
     msg = 'There is no version tracking yet.'
@@ -32,16 +31,14 @@ def version():
 
 @cli.command()
 def config():
-
     """Interact with .openspendingrc"""
 
     click.echo(json.dumps(utilities.ensure_config(), ensure_ascii=False))
 
 
 @cli.command()
-@click.argument('action', type=click.Choice(['login', 'logout']))
+@click.argument('action', type=click.Choice(['get_token']))
 def auth(action):
-
     """Authenticate with the Open Spending auth service."""
 
     service = _auth.Auth()
@@ -52,16 +49,14 @@ def auth(action):
 @cli.command()
 @click.argument('datapackage', default='.', type=click.Path(exists=True))
 def upload(datapackage):
-
     """Upload an Open Spending Data Package to storage. Requires auth."""
-    _valid, _msg = utilities.is_datapackage(datapackage)
 
+    _valid, _msg = utilities.is_datapackage(datapackage)
     if not _valid:
         click.echo(click.style(_msg, fg='red'))
         return
 
     service = _upload.Upload()
-
     service.run(datapackage)
     click.echo(click.style('Done', fg='green'))
 
@@ -72,7 +67,6 @@ def upload(datapackage):
 @click.option('--metadata')
 @click.option('--archive')
 def makemodel(data, mapping, metadata, archive):
-
     """Model data as an Open Spending Data Package.
 
     Args:
@@ -113,7 +107,6 @@ def makemodel(data, mapping, metadata, archive):
 @cli.command()
 @click.argument('datapackage')
 def checkmodel(datapackage):
-
     """Check an Open Spending Data Package descriptor."""
 
     MSG_SUCCESS = ('Congratulations, the data package looks good!')
