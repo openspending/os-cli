@@ -42,7 +42,7 @@ class StorageService(base.OpenSpendingService):
             * payload (list of dicts): {'name': '', 'md5': ''}
         
         Returns:
-            * list of payload with additional 'upload_url' key
+            * the payload with each object modified to add `uplaod_url` and `upload_params`
         """
         verified = self.auth.verify(api_key, token, descriptor['owner'])
         if not verified:
@@ -52,10 +52,16 @@ class StorageService(base.OpenSpendingService):
             s3path = self.get_s3path(descriptor['owner'], descriptor['name'],
                                      _file['name'])
             s3key = self.get_s3key(s3path)
-            s3headers = {'Content-MD5': _file['md5'],
-                         'Content-Length': _file['length']}
-            _file['upload_to'] = s3key.generate_url(self.ACCESS_KEY_EXPIRES_IN,
-                                                    'PUT', headers=s3headers)
+            s3headers = {
+                'Content-Length': [_file['length']],
+                # 'Content-MD5': [_file['md5']]
+            }
+            s3url = s3key.generate_url(self.ACCESS_KEY_EXPIRES_IN, 'PUT',
+                                       headers=s3headers, force_http=True)
+            _parsed = compat.parse.urlparse(s3url)
+            _file['upload_url'] = '{0}://{1}{2}'.format(_parsed.scheme, _parsed.netloc, _parsed.path)
+            _file['upload_params'] = compat.parse.parse_qs(_parsed.query)
+            _file['upload_params'].update(s3headers)
 
         return payload
 
@@ -65,4 +71,4 @@ class StorageService(base.OpenSpendingService):
 
     def get_s3path(self, owner, pkgname, filename):
         """Return a path in this bucket for this file."""
-        return '{0}/{1}'.format(pkgname, filename)
+        return '{0}/{1}/{2}'.format(owner, pkgname, filename)

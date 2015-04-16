@@ -1,5 +1,6 @@
 click
 requests
+requests-futures
 goodtables
 jtskit
 datapackage

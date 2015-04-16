@@ -7,7 +7,8 @@ from __future__ import unicode_literals
 import os
 import io
 import hashlib
-import requests
+import base64
+from requests_futures.sessions import FuturesSession
 from .. import osdatapackage
 from .. import _mock
 from .. import utilities
@@ -15,34 +16,24 @@ from .. import exceptions
 from .. import compat
 
 
-def get_checksum(filepath, blocksize=65536):
-    """Return an MD5 hash of file contents of at filepath."""
+def get_filestats(filepath, blocksize=65536):
+    """Get stats on a file via iteration over its contents.
 
+    Returns:
+    * A tuple of (checksum, length)
+    """
     hasher = hashlib.md5()
+    length = 0
+
     with io.open(filepath, mode='r+b') as stream:
         _buffer = stream.read(blocksize)
         while len(_buffer) > 0:
             hasher.update(_buffer)
+            as_text = _buffer.decode('utf-8')
+            length += len(as_text)
             _buffer = stream.read(blocksize)
 
-    return hasher.digest()
-
-
-def get_contentlength(filepath):
-    """Return an MD5 hash of file contents of at filepath."""
-
-    with io.open(filepath, mode='r+t', encoding='utf-8') as stream:
-        # TODO: temp while working out stuff: should make length while iterating
-        length = len(stream.read())
-
-    return compat.str(length)
-
-
-def get_filestats(filepath):
-    """Get stats on a file via iteration over its contents."""
-    # TODO: Use this call to get_checksum and get_contentlength,
-    # and build them both on iteration
-    return
+    return base64.urlsafe_b64encode(hasher.digest()), compat.str(length)
 
 
 def get_filename(filepath):
@@ -73,11 +64,36 @@ class Upload(object):
         return success
 
     def upload(self, payload):
-        """Upload a datapackage to an Open Spending data store."""
+        """Asyncronously upload a datapackage to Open Spending."""
+
+        def _callback(session, response):
+            print(response.url)
+
+        session = FuturesSession()
+        futures = []
+        streams = []
 
         for _file in payload:
-            files = {'file': io.open(_file['local'], mode='rb+')}
-            response = requests.post(_file['upload_to'], files=files)
+            headers = {'Content-Length': _file['length'],
+                       # 'Content-MD5': _file['md5'],
+                       'Content-Type': None,
+                       'Connection': None,
+                       'User-Agent': None,
+                       'Accept-Encoding': None,
+                       'Accept': None
+            }
+            stream = io.open(_file['local'])
+            streams.append(stream)
+            future = session.put(_file['upload_url'], data=stream,
+                                 headers=headers, params=_file['upload_params'],
+                                 background_callback=_callback)
+            futures.append(future)
+
+        for future in futures:
+            future.result()
+
+        for stream in streams:
+            stream.close()
 
     def get_payload(self, datapackage):
         """Return a generator of dict with file info."""
@@ -87,11 +103,12 @@ class Upload(object):
     def get_file_payload(self, filepath):
         """Return a file payload object."""
 
+        checksum, length = get_filestats(filepath)
         return {
             'local': filepath,
             'name': get_filename(filepath),
-            'md5': get_checksum(filepath),
-            'length': get_contentlength(filepath)
+            'md5': checksum,
+            'length': length
         }
 
     def _walker(self, datapackage):

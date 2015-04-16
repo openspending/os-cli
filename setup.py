@@ -28,6 +28,7 @@ with io.open(METADATA_PATH, mode='r+t', encoding='utf-8') as stream:
 dependencies = [
     'click',
     'requests',
+    'requests-futures',
     'goodtables',
     'jtskit',
     'datapackage',
