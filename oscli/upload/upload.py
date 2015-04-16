@@ -72,6 +72,7 @@ class Upload(object):
         session = FuturesSession()
         futures = []
         streams = []
+        uploading = True
 
         for _file in payload:
             headers = {'Content-Length': _file['length'],
@@ -89,8 +90,8 @@ class Upload(object):
                                  background_callback=_callback)
             futures.append(future)
 
-        for future in futures:
-            future.result()
+        while uploading:
+            uploading = not all([future.done() for future in futures])
 
         for stream in streams:
             stream.close()
