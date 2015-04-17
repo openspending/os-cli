@@ -67,7 +67,9 @@ related to you, the user. When using the CLI, it will look for an
 
 * The current working directory
 * The executing user's $HOME
-* If not found, an error will be raised
+* If not found, services that require settings from the config file will fail.
+
+A config file looks something like this:
 
 ```
 # .openspendingrc
@@ -77,6 +79,14 @@ related to you, the user. When using the CLI, it will look for an
     "token": "SOME_TOKEN_FROM_AUTH_SERVICE"
 }
 ```
+
+The CLI has a helper command for working with config files: `openspending config`.
+
+* `openspending config read`: return the currently active config as JSON, or null.
+* `openspending config locate`: return the filepath of the currently active config as JSON,
+or null.
+* `openspending config ensure`: return the currently active config as JSON, creating
+a skeleton config first in $HOME if no config is found.
 
 #### Mock services
 

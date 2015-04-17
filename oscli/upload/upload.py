@@ -13,6 +13,7 @@ from .. import osdatapackage
 from .. import _mock
 from .. import utilities
 from .. import exceptions
+from .. import mixins
 from .. import compat
 
 
@@ -41,12 +42,12 @@ def get_filename(filepath):
     return os.path.basename(filepath)
 
 
-class Upload(object):
+class Upload(mixins.WithConfig):
 
     """Upload a datapackage to the flat file store."""
 
     def __init__(self, config=None):
-        self.config = config or utilities.read_config()
+        super(Upload, self).__init__(config=config)
         try:
             self.backend = _mock.StorageService()
         except exceptions.InvalidSessionError as e:

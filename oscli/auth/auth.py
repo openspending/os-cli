@@ -6,12 +6,15 @@ from __future__ import unicode_literals
 
 from .. import _mock
 from .. import utilities
+from .. import mixins
 
 
-class Auth(object):
+class Auth(mixins.WithConfig):
+
+    CONFIG_REQUIRES = ('api_key',)
 
     def __init__(self, config=None):
-        self.config = config or utilities.read_config()
+        super(Auth, self).__init__(config=config)
         self.backend = _mock.AuthService()
 
     def get_token(self):

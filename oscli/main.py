@@ -14,6 +14,7 @@ from oscli import checkdata as _checkdata
 from oscli import auth as _auth
 from oscli import upload as _upload
 from oscli import utilities
+from oscli import exceptions
 
 
 @click.group()
@@ -30,10 +31,26 @@ def version():
 
 
 @cli.command()
-def config():
-    """Interact with .openspendingrc"""
+@click.argument('action', default='read', type=click.Choice(['read', 'locate', 'ensure']))
+def config(action):
+    """Interact with .openspendingrc
 
-    click.echo(json.dumps(utilities.ensure_config(), ensure_ascii=False))
+    Args:
+    * action: one of 'read', 'locate' or 'ensure'
+        * 'read' will return the currently active config
+        * 'locate' will return the location of the currently active config
+        * 'ensure' will check a config exists, and write one in $HOME if not
+ 
+    """
+
+    if action == 'read':
+        click.echo(json.dumps(utilities.read_config(), ensure_ascii=False))
+
+    if action == 'locate':
+        click.echo(json.dumps(utilities.locate_config(), ensure_ascii=False))
+
+    if action == 'ensure':
+        click.echo(json.dumps(utilities.ensure_config(), ensure_ascii=False))
 
 
 @cli.command()
@@ -41,7 +58,12 @@ def config():
 def auth(action):
     """Authenticate with the Open Spending auth service."""
 
-    service = _auth.Auth()
+    try:
+        service = _auth.Auth()
+    except (exceptions.ConfigNotFoundError, exceptions.ConfigValueError) as e:
+        click.echo(click.style(e.msg, fg='red'))
+        return
+
     result = getattr(service, action)()
     click.echo(result)
 
@@ -51,12 +73,35 @@ def auth(action):
 def upload(datapackage):
     """Upload an Open Spending Data Package to storage. Requires auth."""
 
+    # don't proceed without a config
+    if not utilities.locate_config():
+        _msg = ('Uploading requires a config file. See the configuration '
+                'section of the README for more information: '
+                'https://github.com/openspending/oscli-poc')
+        click.echo(click.style(_msg, fg='red'))
+        return
+
+    # is data package
     _valid, _msg = utilities.is_datapackage(datapackage)
     if not _valid:
         click.echo(click.style(_msg, fg='red'))
         return
 
-    service = _upload.Upload()
+    # is open spending data package
+    checker = _checkmodel.Checker(datapackage)
+    checker.run()
+    if not checker.success:
+        _msg = ('While checking the data, we found some found some '
+                'issues: {0}')
+        click.echo(click.style(_msg.format(checker.error), fg='red'))
+        return
+
+    try:
+        service = _upload.Upload()
+    except (exceptions.ConfigNotFoundError, exceptions.ConfigValueError) as e:
+        click.echo(click.style(e.msg, fg='red'))
+        return
+
     service.run(datapackage)
     click.echo(click.style('Done', fg='green'))
 
