@@ -48,20 +48,24 @@ class Upload(mixins.WithConfig):
 
     def __init__(self, config=None):
         super(Upload, self).__init__(config=config)
+
         try:
             self.backend = _mock.StorageService()
         except exceptions.InvalidSessionError as e:
             raise e
 
+        self.current_pkg = None
+
     def run(self, datapackage):
         """Run the upload flow."""
-
-        pkg = osdatapackage.OpenSpendingDataPackage(datapackage)
+        self.current_pkg = osdatapackage.OpenSpendingDataPackage(datapackage)
         payload = list(self.get_payload(datapackage))
         payload = self.backend.get_upload_access(self.config['api_key'],
                                                  self.config['token'],
-                                                 pkg.as_dict(), payload)
+                                                 self.current_pkg.as_dict(),
+                                                 payload)
         success = self.upload(payload)
+        self.current_pkg = None
         return success
 
     def upload(self, payload):
@@ -114,9 +118,11 @@ class Upload(mixins.WithConfig):
         }
 
     def _walker(self, datapackage):
-        """Return all files in a datapackage."""
-        # TODO: only get files in datapackage, and anything in archive/*
+        """Return all files that match our conditions in a directory."""
+
         collected = []
         for root, dirs, files in os.walk(datapackage):
-            collected.extend([os.path.join(root, f) for f in files if not f.startswith('.')])
+            collected.extend([os.path.join(root, f) for f in files
+                              if not get_filename(f).startswith('.')])
+
         return collected
