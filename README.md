@@ -11,10 +11,19 @@ Proposals:
 * [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html)
 * [OSEP #5](http://labs.openspending.org/osep/05-etl-workflow.html)
 
+## Jump to section
 
-## Setup
+* [Getting started](#getting-started)
+    * [Installation](#installation)
+    * [Configuration](#configuration)
+    * [Data](#data)
+* [Usage](#usage)
+* [Open Spending Data Package](#open-spending-data-package)
+* [Mock Services](#mock-services)
 
-### Install
+## Getting started
+
+### Installation
 
 Ensure you have Python 2.7, 3.3 or 3.4 installed. A virtual environment is good too.
 
@@ -22,7 +31,7 @@ Move into your directory and:
 
 ```
 # Get the code
-git clone https://github.com/openspending/oscli.git .
+git clone https://github.com/openspending/oscli-poc.git .
 
 # Install the dependencies
 pip install -r requirements/base.txt
@@ -88,20 +97,22 @@ OPENSPENDING_ACCESS_KEY_ID={YOUR_AWS_ACCESS_KEY_ID}
 OPENSPENDING_SECRET_ACCESS_KEY={YOUR_AWS_SECRET_ACCESS_KEY}
 ```
 
-### Get data
+### Data
 
 You'll need some spend data in CSV format.
 
 The `examples` directory contains some data to test with.
 
-## Using the CLI
+## Usage
 
 Once you have fully configured your setup, we can get to work.
 
-`openspending` can be used with new data in the following sequence.
+Here I'll describe the linear sequence for using the CLI, where you can start
+from having a CSV of spend data, and proceeed through modeling and upload
+of that data as part of an Open Spending Data Package.
 
-Alternatively, you can start at any step if you know your data conforms
-with the previous steps.
+Of course, you can start at any step in the sequence if you know that your
+data conforms with the previous steps.
 
 ### Step 1. Ensure resources are well formed
 
@@ -137,22 +148,17 @@ you@machine:~$ goodtables structure examples/data_valid.csv
 
 WELL DONE! THE DATA IS VALID :)
 
-META.
-Name: structure
-
-###
-
-RESULTS.
-No results were generated.
 ```
+
+See the [Good Tables documentation](http://goodtables.readthedocs.org/) for more.
 
 ### Step 2. Model the data
 
 Use the `makemodel` subcommand to model the data.
 
-Modeling the data involves two related steps:
+Modeling the data means:
 
-* Creating an [Open Spending Data Package](http://labs.openspending.org/osep/04-openspending-data-package.html)
+* Creating an [Open Spending Data Package](#open-spending-data-package) to "house" the data
 * Inferring a schema for the data resources therein (Data Packages use [JSON Table Schema](http://dataprotocols.org/json-table-schema/)).
 
 ```
@@ -160,6 +166,8 @@ you@machine:~$ openspending makemodel /examples/data_valid.csv --mapping id=my_i
 ```
 
 **Note:** If your data features both `id` and `amount` fields, then you are not required to provide a mapping via the command line.
+
+See the [makemodel docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
 ### Step 3. Check the model
 
@@ -174,6 +182,8 @@ but let's do it anyway).
 you@machine:~$ openspending checkmodel /examples/test_data_package
 ```
 
+See the [checkmodel docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
+
 ### Step 4. Check the Data Schema
 
 Use the `checkdata` subcommand to ensure that the data conforms to the schema.
@@ -182,27 +192,27 @@ Use the `checkdata` subcommand to ensure that the data conforms to the schema.
 you@machine:~$ openspending checkdata /examples/test_data_package
 ```
 
+See the [checkdata docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
+
 ### Step 4. Authenticate with Open Spending
 
 Use the `auth` subcommand to authenticate with Open Spending.
 
 The previous steps are completely local.
 
-In order to interact with an Open Spending service, we need to authenticate ourselves.
+In order to interact with an Open Spending service, you must be an
+authenticated user.
 
-The next step is to upload our new data package to the datastore.
-
-So, we need to authenticate.
+The next step is to upload our new data package to the datastore,
+so, we need to authenticate.
 
 This is the first step that uses the .openspendingrc file.
-
-This configuration file contains a JSON object.
-
-For specifics, see the section below.
 
 ```
 you@machine:~$ openspending auth get_token
 ```
+
+See the [auth docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
 ### Step 5. Upload to the Open Spending datastore
 
@@ -212,13 +222,14 @@ Use the `upload` subcommand to upload a data package to Open Spending.
 you@machine:~$ openspending upload /examples/test_data_package
 ```
 
+See the [upload docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
 ## Mock services
 
 Seeing as this is still at proof-of-concept stage, the code contains some
 basic mocks for services that it requires.
 
-#### base.OpenSpendingService
+### base.OpenSpendingService
 
 `_mock.base.OpenSpendingService` is the base service that others inherit from.
 
@@ -229,18 +240,44 @@ based on whether the token is valid. Currently wraps `_accept_token`
 * `_accept_token`: accepts a token as an argument, and returns True or False
 based on whether the token is valid.
 
-#### AuthService
+### AuthService
 
 `_mock.AuthService` provides services for login and logout.
 
-* `login`: Return a dummy token. Currently, having a token indicates the user
+* `get_token`: Return a dummy token. Currently, having a token indicates the user
 is authenticated. In a proper implementation, tokens would be signed, have
 expiry, and so on.
-* `logout`: Logs out a user by invalidating the user's token. Currently, this
-means removing the token from .openspendingrc.
 
-#### StorageService
+### StorageService
 
 `_mock.StorageService` provides services for interacting with Open Spending
 file storage. This includes connecting to a bucket, and providing methods to
 manage uploads of data packages.
+
+* `get_upload_access`: Ultimately provides temporary URLs that are used to upload
+files in data packages.
+
+## Open Spending Data Package
+
+Open Spending Data Package is a [Tabular Data Package](http://dataprotocols.org/tabular-data-package/).
+
+It extends and modifies [Budget Data Package](https://github.com/openspending/budget-data-package/blob/master/specification.md).
+
+The enhancement proposal for Open Spending Data Package is [here](http://labs.openspending.org/osep/04-openspending-data-package.html).
+
+Ultimately, Open Spending should support Budget Data Packages proper.
+
+Having an Open Spending Data Package allows us to:
+
+* Add new properties that are desirable for Open Spending before they are added upstream
+* Flexibility to not require some of the things that are required in Budget Data Package
+* Provide a testing ground for ideas that may ultimately get merged into Budget Data Package
+
+The code for handling Open Spending Data Packages is [here](https://github.com/openspending/oscli-poc/tree/master/oscli/osdatapackage).
+
+## Next steps
+
+* Build out actual Storage and Auth services
+* Build a web UI based around this CLI
+* Extract out components into their own packages; Remove existing mocks
+* Provide or describe and API for accessing Data Packages directly from the flat file store
