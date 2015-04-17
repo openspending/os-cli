@@ -33,6 +33,8 @@ class OpenSpendingDataPackage(datapackage.DataPackage):
                      'base': compat.str,
                      'dataDependencies': dict,
 
+                     # addition based on https://github.com/dataprotocols/dataprotocols/issues/87
+                     'profiles': dict,
                      # openspending specific
                      'owner': compat.str,
                      'openspending': dict}
@@ -76,6 +78,12 @@ class OpenSpendingDataPackage(datapackage.DataPackage):
             missing.append('mapping > amount')
 
         return missing
+
+    @property
+    def profiles(self):
+        return {
+            'openspending': '*'
+        }
 
     @property
     def openspending(self):
