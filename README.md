@@ -271,17 +271,37 @@ files in data packages.
 
 Open Spending Data Package is a [Tabular Data Package](http://dataprotocols.org/tabular-data-package/).
 
+Open Spending Data Package is described in [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html).
+
 It extends and modifies [Budget Data Package](https://github.com/openspending/budget-data-package/blob/master/specification.md).
 
-The enhancement proposal for Open Spending Data Package is [here](http://labs.openspending.org/osep/04-openspending-data-package.html).
+The following fields are `REQUIRED` in an Open Spending Data Package:
 
-Ultimately, Open Spending should support Budget Data Packages proper.
+**Metadata fields**
 
-Having an Open Spending Data Package allows us to:
+Metadata fields are located directly on the descriptor object. These required
+fields are in addition to the required fields for all
+[Tabular Data Packages](http://dataprotocols.org/tabular-data-package/).
+ 
+* `owner`: The `owner` field is a `STRING` which is the username of the
+person or organization entity in Open Spending that the package belongs to.
+* `openspending`: The `openspending` field is a `HASH` which `MAY` have a key named `mapping`.
+* `openspending.mapping`: The `openspending.mapping` field is a `HASH` where each
+key is a resource field, and the value is a field fond in the resource.
+In this way, it is possible to provide compliant Open Spending data without making extensive
+changes to existing data files.
+* `currency`: The currency of the data.
 
-* Add new properties that are desirable for Open Spending before they are added upstream
-* Flexibility to not require some of the things that are required in Budget Data Package
-* Provide a testing ground for ideas that may ultimately get merged into Budget Data Package
+**Resource fields**
+
+Resource fields are located on each object in the `resources` array.
+
+The only required fields are `id` and `amount`. However, of the `openspending.mapping`
+object in the metadata declares a mapping for one or both of `id` and `amount`, then
+those fields are required; not `id` and `amount`.
+
+* `id`: A string which is a unique identifier for this line
+* `amount`: The monetary amount of this line
 
 The code for handling Open Spending Data Packages is [here](https://github.com/openspending/oscli-poc/tree/master/oscli/osdatapackage).
 

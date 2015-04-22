@@ -57,7 +57,7 @@ def read_config():
         with io.open(_path, mode='r+t', encoding='utf-8') as stream:
             return json.loads(stream.read())
 
-        
+
 def locate_config():
     """Return path to active config, or None."""
     return get_config_path()

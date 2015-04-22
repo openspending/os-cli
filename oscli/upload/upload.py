@@ -11,7 +11,6 @@ import base64
 from requests_futures.sessions import FuturesSession
 from .. import osdatapackage
 from .. import _mock
-from .. import utilities
 from .. import exceptions
 from .. import mixins
 from .. import compat
@@ -34,7 +33,10 @@ def get_filestats(filepath, blocksize=65536):
             length += len(as_text)
             _buffer = stream.read(blocksize)
 
-    return base64.urlsafe_b64encode(hasher.digest()), compat.str(length)
+    checksum = base64.b64encode(hasher.digest()).decode('utf-8')
+    length = compat.str(length)
+
+    return checksum, length
 
 
 def get_filename(filepath):
@@ -72,7 +74,20 @@ class Upload(mixins.WithConfig):
         """Asyncronously upload a datapackage to Open Spending."""
 
         def _callback(session, response):
-            print(response.url)
+            """Do something when each PUT request finishes."""
+
+            _parsed = compat.parse.urlparse(response.url)
+            url = '{0}://{1}{2}'.format(_parsed.scheme, _parsed.netloc,
+                                        _parsed.path)
+            status = response.status_code
+
+            if status == 200:
+                text = ('This file is now serving live Open Spending.')
+            else:
+                text = ('Something went wrong with this file. Here is '
+                        'some data we received.\n\n{0}'.format(response.text))
+
+            print('FILE (status {0}): {1}\n'.format(status, url, text))
 
         session = FuturesSession()
         futures = []
@@ -81,7 +96,7 @@ class Upload(mixins.WithConfig):
 
         for _file in payload:
             headers = {'Content-Length': _file['length'],
-                       # 'Content-MD5': _file['md5'],
+                       'Content-MD5': _file['md5'],
                        'Content-Type': None,
                        'Connection': None,
                        'User-Agent': None,
@@ -91,7 +106,8 @@ class Upload(mixins.WithConfig):
             stream = io.open(_file['local'])
             streams.append(stream)
             future = session.put(_file['upload_url'], data=stream,
-                                 headers=headers, params=_file['upload_params'],
+                                 headers=headers,
+                                 params=_file['upload_params'],
                                  background_callback=_callback)
             futures.append(future)
 

@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import io
 import json
 import click
 from oscli import makemodel as _makemodel
@@ -53,19 +52,20 @@ def config(action):
         click.echo(json.dumps(utilities.ensure_config(), ensure_ascii=False))
 
 
-@cli.command()
-@click.argument('action', type=click.Choice(['get_token']))
-def auth(action):
-    """Authenticate with the Open Spending auth service."""
+# TODO: auth when we have a real service to auth with.
+# @cli.command()
+# @click.argument('action', type=click.Choice(['get_token']))
+# def auth(action):
+#     """Authenticate with the Open Spending auth service."""
 
-    try:
-        service = _auth.Auth()
-    except (exceptions.ConfigNotFoundError, exceptions.ConfigValueError) as e:
-        click.echo(click.style(e.msg, fg='red'))
-        return
+#     try:
+#         service = _auth.Auth()
+#     except (exceptions.ConfigNotFoundError, exceptions.ConfigValueError) as e:
+#         click.echo(click.style(e.msg, fg='red'))
+#         return
 
-    result = getattr(service, action)()
-    click.echo(result)
+#     result = getattr(service, action)()
+#     click.echo(result)
 
 
 @cli.command()
@@ -92,8 +92,10 @@ def upload(datapackage):
     checker.run()
     if not checker.success:
         _msg = ('While checking the data, we found some found some '
-                'issues: {0}')
-        click.echo(click.style(_msg.format(checker.error), fg='red'))
+                'issues: \n{0}\nRead more about required fields '
+                'in Open Spending Data Packages here: {1}')
+        url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
+        click.echo(click.style(_msg.format(checker.error, url), fg='red'))
         return
 
     try:
@@ -102,8 +104,11 @@ def upload(datapackage):
         click.echo(click.style(e.msg, fg='red'))
         return
 
+    click.echo(click.style('Your data is now being uploaded to Open Spending.\n',
+                           fg='green'))
     service.run(datapackage)
-    click.echo(click.style('Done', fg='green'))
+    click.echo(click.style('Your data is now live on Open Spending!',
+                           fg='green'))
 
 
 @cli.command()
@@ -156,14 +161,16 @@ def checkmodel(datapackage):
 
     MSG_SUCCESS = ('Congratulations, the data package looks good!')
     MSG_ERROR = ('While checking the data, we found some found some '
-                 'issues: {0}')
+                 'issues: \n{0}\nRead more about required fields in '
+                 'Open Spending Data Package here: {1}')
+    url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
 
     service = _checkmodel.Checker(datapackage)
     service.run()
     if service.success:
         click.echo(click.style(MSG_SUCCESS))
     else:
-        click.echo(click.style(MSG_ERROR.format(service.error)))
+        click.echo(click.style(MSG_ERROR.format(service.error, url)))
 
 
 @cli.command()

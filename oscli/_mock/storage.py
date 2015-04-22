@@ -53,15 +53,16 @@ class StorageService(base.OpenSpendingService):
                                      _file['name'])
             s3key = self.get_s3key(s3path)
             s3headers = {
-                'Content-Length': [_file['length']],
-                # 'Content-MD5': [_file['md5']]
+                'Content-Length': _file['length'],
+                'Content-MD5': _file['md5']
             }
             s3url = s3key.generate_url(self.ACCESS_KEY_EXPIRES_IN, 'PUT',
                                        headers=s3headers, force_http=True)
             _parsed = compat.parse.urlparse(s3url)
-            _file['upload_url'] = '{0}://{1}{2}'.format(_parsed.scheme, _parsed.netloc, _parsed.path)
+            _file['upload_url'] = '{0}://{1}{2}'.format(_parsed.scheme,
+                                                        _parsed.netloc,
+                                                        _parsed.path)
             _file['upload_params'] = compat.parse.parse_qs(_parsed.query)
-            _file['upload_params'].update(s3headers)
 
         return payload
 
