@@ -63,7 +63,6 @@ class Upload(mixins.WithConfig):
         self.current_pkg = osdatapackage.OpenSpendingDataPackage(datapackage)
         payload = list(self.get_payload(datapackage))
         payload = self.backend.get_upload_access(self.config['api_key'],
-                                                 self.config['token'],
                                                  self.current_pkg.as_dict(),
                                                  payload)
         success = self.upload(payload)

@@ -75,8 +75,7 @@ A config file looks something like this:
 # .openspendingrc
 
 {
-    "api_key": "",
-    "token": "SOME_TOKEN_FROM_AUTH_SERVICE"
+    "api_key": ""
 }
 ```
 
@@ -87,6 +86,18 @@ The CLI has a helper command for working with config files: `openspending config
 or null.
 * `openspending config ensure`: return the currently active config as JSON, creating
 a skeleton config first in $HOME if no config is found.
+
+So, to configure correctly, do the following:
+
+* Create an `.openspendingrc` file as per the above description, or, run
+`openspending config ensure` to add a skeleton file in your $HOME directory
+* Then, choose a user to use from the mock users, and thake that `api_key` as the
+value of `api_key` in your config. The mock usersare as follows (username, api_key):
+    * user1, 0c5f9c932f9c4196aacba5166380775d
+    * user2, a058790b30444991b2a6ad027c6dd619
+    * user3, c57248b227d34abd8e4428f618ef6243
+* Ensure that the `owner` of your data packages corresponds with the username
+you are working with.
 
 #### Mock services
 

@@ -5,8 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import io
-import json
 import boto
 from . import base
 from . import auth
@@ -35,19 +33,20 @@ class StorageService(base.OpenSpendingService):
         self.bucket = self.connection.get_bucket(self.BUCKET)
         self.auth = self.AUTH_SERVICE()
 
-    def get_upload_access(self, api_key, token, descriptor, payload):
+    def get_upload_access(self, api_key, descriptor, payload):
         """Get an access URL for each file in payload.
 
         Args:
             * payload (list of dicts): {'name': '', 'md5': ''}
-        
+
         Returns:
-            * the payload with each object modified to add `uplaod_url` and `upload_params`
+            * the payload with each object modified to add `upload_url` 
+              and `upload_params`
         """
-        verified = self.auth.verify(api_key, token, descriptor['owner'])
+        verified = self.auth.verify(api_key, descriptor['owner'])
         if not verified:
             raise exceptions.InvalidCredentials
-    
+
         for _file in payload:
             s3path = self.get_s3path(descriptor['owner'], descriptor['name'],
                                      _file['name'])
