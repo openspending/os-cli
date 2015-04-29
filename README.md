@@ -118,6 +118,44 @@ OPENSPENDING_ACCESS_KEY_ID={YOUR_AWS_ACCESS_KEY_ID}
 OPENSPENDING_SECRET_ACCESS_KEY={YOUR_AWS_SECRET_ACCESS_KEY}
 ```
 
+Your bucket also must be configured. Here are some example configurations:
+
+S3 bucket policy:
+
+```
+{
+	"Version": "2008-10-17",
+	"Id": "Policy1380877762691",
+	"Statement": [
+		{
+			"Sid": "Stmt1380877761162",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "*"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::_YOUR_BUCKET_NAME_/*"
+		}
+	]
+}
+```
+
+S3 CORS configuration:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>POST</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+
 ### Data
 
 You'll need some spend data in CSV format.
