@@ -3,7 +3,8 @@ requests
 requests-futures
 goodtables
 jtskit
-datapackage
+# datapackage
+git+https://github.com/pwalsh/datapackage.git@hotfix/py3-fallout#egg=datapackage
 budgetdatapackage
 tabulate
 boto
