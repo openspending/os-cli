@@ -183,7 +183,7 @@ Modeling the data means:
 * Inferring a schema for the data resources therein (Data Packages use [JSON Table Schema](http://dataprotocols.org/json-table-schema/)).
 
 ```
-you@machine:~$ openspending makemodel /examples/data_valid.csv --mapping id=my_id,amount=my_amount
+you@machine:~$ openspending makemodel examples/data_valid.csv --mapping id=my_id,amount=my_amount
 ```
 
 **Note:** If your data features both `id` and `amount` fields, then you are not required to provide a mapping via the command line.
@@ -200,7 +200,9 @@ Data Package (which it obviously will be if it was created at step 2...
 but let's do it anyway).
 
 ```
-you@machine:~$ openspending checkmodel /examples/test_data_package
+you@machine:~$ openspending checkmodel examples/dp-valid
+# or
+you@machine:~$ openspending checkmodel examples/dp-invalid
 ```
 
 See the [checkmodel docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
@@ -210,13 +212,18 @@ See the [checkmodel docstring](https://github.com/openspending/oscli-poc/blob/ma
 Use the `checkdata` subcommand to ensure that the data conforms to the schema.
 
 ```
-you@machine:~$ openspending checkdata /examples/test_data_package
+you@machine:~$ openspending checkdata examples/dp-valid
+# or
+you@machine:~$ openspending checkdata examples/dp-invalid
 ```
 
 See the [checkdata docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-### Step 4. Authenticate with Open Spending
+### Step 5. Authenticate with Open Spending
 
+ignore this step for now, but do ensure that you configured your .openspendingrc as described above.
+
+<del>
 Use the `auth` subcommand to authenticate with Open Spending.
 
 The previous steps are completely local.
@@ -228,6 +235,7 @@ The next step is to upload our new data package to the datastore,
 so, we need to authenticate.
 
 This is the first step that uses the .openspendingrc file.
+</del>
 
 ```
 you@machine:~$ openspending auth get_token
@@ -240,7 +248,7 @@ See the [auth docstring](https://github.com/openspending/oscli-poc/blob/master/o
 Use the `upload` subcommand to upload a data package to Open Spending.
 
 ```
-you@machine:~$ openspending upload /examples/test_data_package
+you@machine:~$ openspending upload examples/dp-valid
 ```
 
 See the [upload docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
@@ -293,7 +301,7 @@ The following fields are `REQUIRED` in an Open Spending Data Package:
 Metadata fields are located directly on the descriptor object. These required
 fields are in addition to the required fields for all
 [Tabular Data Packages](http://dataprotocols.org/tabular-data-package/).
- 
+
 * `owner`: The `owner` field is a `STRING` which is the username of the
 person or organization entity in Open Spending that the package belongs to.
 * `openspending`: The `openspending` field is a `HASH` which `MAY` have a key named `mapping`.

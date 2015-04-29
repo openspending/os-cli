@@ -83,7 +83,7 @@ class Modeler(object):
 
         mapping = {}
         _schema = copy.deepcopy(self.schema)
-        schema_model = jtskit.models.JSONTableSchema(_schema)
+        schema_model = jtskit.models.SchemaModel(_schema)
 
         if schema_model.has_field('id'):
             mapping['id'] = 'id'

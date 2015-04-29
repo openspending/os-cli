@@ -14,6 +14,7 @@ from oscli import auth as _auth
 from oscli import upload as _upload
 from oscli import utilities
 from oscli import exceptions
+from oscli import compat
 
 
 @click.group()
@@ -39,7 +40,7 @@ def config(action):
         * 'read' will return the currently active config
         * 'locate' will return the location of the currently active config
         * 'ensure' will check a config exists, and write one in $HOME if not
- 
+
     """
 
     if action == 'read':
@@ -86,6 +87,9 @@ def upload(datapackage):
     if not _valid:
         click.echo(click.style(_msg, fg='red'))
         return
+
+    if isinstance(datapackage, compat.bytes):
+        datapackage = datapackage.decode('utf-8')
 
     # is open spending data package
     checker = _checkmodel.Checker(datapackage)
