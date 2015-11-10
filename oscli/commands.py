@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import os
 import json
 import click
-from oscli import auth as _auth
 from oscli import upload as _upload
 from oscli import utilities
 from oscli import exceptions
