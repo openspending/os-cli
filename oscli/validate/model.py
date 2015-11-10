@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-from .. import osdatapackage
+from .. import package
 
 
 class ModelValidator(object):
@@ -24,7 +24,7 @@ class ModelValidator(object):
 
     def run(self):
         try:
-            osdatapackage.OpenSpendingDataPackage(**self.descriptor)
+            pakcage.OpenSpendingDataPackage(**self.descriptor)
             self.success = True
         except Exception as e:
             self.error = e

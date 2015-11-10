@@ -9,11 +9,11 @@ import io
 import hashlib
 import base64
 from requests_futures.sessions import FuturesSession
-from .. import osdatapackage
 from .. import _mock
 from .. import exceptions
 from .. import mixins
 from .. import compat
+from .. import package
 
 
 def get_filestats(filepath, blocksize=65536):
@@ -60,7 +60,7 @@ class Upload(mixins.WithConfig):
 
     def run(self, datapackage):
         """Run the upload flow."""
-        self.current_pkg = osdatapackage.OpenSpendingDataPackage(datapackage)
+        self.current_pkg = package.OpenSpendingDataPackage(datapackage)
         payload = list(self.get_payload(datapackage))
         payload = self.backend.get_upload_access(self.config['api_key'],
                                                  self.current_pkg.as_dict(),

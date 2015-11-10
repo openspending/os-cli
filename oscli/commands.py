@@ -8,25 +8,20 @@ import os
 import json
 import click
 from oscli import upload as _upload
-from oscli import utilities
-from oscli import exceptions
-from oscli import compat
-from .config import Config
-from .validate import ModelValidator, DataValidator
+from . import compat, config, exceptions, validate, utilities
 
 
 @click.group()
 def cli():
     """Open Spending CLI.
-
     """
 
 
-@cli.command()
-@click.argument(
-    'action', default='read', type=click.Choice(['locate', 'ensure', 'read', 'write']))
+@cli.command(name='config')
+@click.argument('action', default='read',
+    type=click.Choice(['locate', 'ensure', 'read', 'write']))
 @click.argument('data', default='{}')
-def config(action, data):
+def command_config(action, data):
     """Interact with config in .openspendingrc
 
     Args:
@@ -40,30 +35,30 @@ def config(action, data):
 
     # Locate
     if action == 'locate':
-        click.echo(Config.locate())
+        click.echo(config.Config.locate())
 
     # Ensure
     if action == 'ensure':
-        click.echo(json.dumps(Config.ensure(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(config.Config.ensure(), indent=4, ensure_ascii=False))
 
     # Read
     if action == 'read':
-        click.echo(json.dumps(Config.read(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(config.Config.read(), indent=4, ensure_ascii=False))
 
     # Write
     if action == 'write':
         try:
             data = json.loads(data)
-            click.echo(json.dumps(Config.write(**data), indent=4, ensure_ascii=False))
+            click.echo(json.dumps(config.Config.write(**data), indent=4, ensure_ascii=False))
         except Exception:
             raise ValueError('Data is a not valid config in JSON format.')
 
 
-@cli.command()
+@cli.command(name='validate')
 @click.argument('subcommand', type=click.Choice(['model', 'data']))
 @click.argument('datapackage')
 @click.option('--interactive', is_flag=True)
-def validate(subcommand, datapackage, interactive):
+def command_validate(subcommand, datapackage, interactive):
     """Validate an Open Spending Data Package descriptor/data.
 
     Args:
@@ -81,7 +76,7 @@ def validate(subcommand, datapackage, interactive):
                      'issues: \n{0}\nRead more about required fields in '
                      'Open Spending Data Package here: {1}')
         url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
-        service = ModelValidator(datapackage)
+        service = validate.ModelValidator(datapackage)
         service.run()
         if service.success:
             click.echo(click.style(MSG_SUCCESS))
@@ -89,7 +84,7 @@ def validate(subcommand, datapackage, interactive):
             click.echo(click.style(MSG_ERROR.format(service.error, url)))
 
     # Validate data
-    else:
+    if subcommand == 'data':
 
         MSG_SUCCESS = ('\nCongratulations, the data looks good! You can now move on\n'
                        'to uploading your new data package to Open Spending!')
@@ -108,24 +103,24 @@ def validate(subcommand, datapackage, interactive):
         DESCRIPTOR = 'datapackage.json'
 
         datapackage = os.path.abspath(datapackage)
-        service = DataValidator(datapackage)
+        service = validate.DataValidator(datapackage)
         success = service.run()
 
         if success:
+
             click.echo(click.style(MSG_SUCCESS, fg='green'))
 
         else:
 
-            report = DataValidator.display_report(service.reports)
+            report = validate.DataValidator.display_report(service.reports)
+
             if interactive:
                 if click.confirm(click.style(MSG_CONTINUE, fg='red')):
                     click.clear()
                     click.echo(click.style(report, fg='blue'))
                     click.echo(click.style(MSG_CONTEXT, fg='yellow'))
-
                 if click.confirm(click.style(MSG_GUIDE, fg='yellow')):
                     click.launch(GUIDE_URL)
-
                 if click.confirm(click.style(MSG_EDIT, fg='yellow')):
                     click.edit(filename=os.path.join(datapackage, DESCRIPTOR))
 
@@ -145,7 +140,7 @@ def upload(datapackage):
     """
 
     # don't proceed without a config
-    if not utilities.locate_config():
+    if not config.Config.locate():
         _msg = ('Uploading requires a config file. See the configuration '
                 'section of the README for more information: '
                 'https://github.com/openspending/oscli-poc')
