@@ -57,6 +57,12 @@ See the help:
 openspending --help
 ```
 
+For development purposes run:
+
+```
+python debug.py --help
+```
+
 ### Configuration
 
 #### User settings
