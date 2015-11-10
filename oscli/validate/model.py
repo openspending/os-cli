@@ -7,12 +7,15 @@ from __future__ import unicode_literals
 import os
 import io
 import json
+import datapackage_validate
 from .. import package
 
 
 class ModelValidator(object):
     """Check that a descriptor is a valid Open Spending Data Package.
     """
+
+    SCHEMA = 'fiscal'
 
     def __init__(self, datapackage):
         self.datapackage = datapackage
@@ -23,11 +26,10 @@ class ModelValidator(object):
         self.error = None
 
     def run(self):
-        try:
-            pakcage.OpenSpendingDataPackage(**self.descriptor)
-            self.success = True
-        except Exception as e:
-            self.error = e
-            self.success = False
+
+        valid, errors = datapackage_validate.validate(
+            self.descriptor, self.SCHEMA)
+        self.success = valid
+        self.error = errors
 
         return self.success
