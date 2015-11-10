@@ -9,39 +9,8 @@ import io
 import hashlib
 import base64
 from requests_futures.sessions import FuturesSession
-from .. import _mock
-from .. import exceptions
-from .. import mixins
-from .. import compat
-from .. import package
+from .. import _mock, exceptions, mixins, compat, package, utilities
 
-
-def get_filestats(filepath, blocksize=65536):
-    """Get stats on a file via iteration over its contents.
-
-    Returns:
-    * A tuple of (checksum, length)
-    """
-    hasher = hashlib.md5()
-    length = 0
-
-    with io.open(filepath, mode='r+b') as stream:
-        _buffer = stream.read(blocksize)
-        while len(_buffer) > 0:
-            hasher.update(_buffer)
-            as_text = _buffer.decode('utf-8')
-            length += len(as_text)
-            _buffer = stream.read(blocksize)
-
-    checksum = base64.b64encode(hasher.digest()).decode('utf-8')
-    length = compat.str(length)
-
-    return checksum, length
-
-
-def get_filename(filepath):
-    """Return the actual filename from the filepath."""
-    return os.path.basename(filepath)
 
 
 class Upload(mixins.WithConfig):
@@ -124,10 +93,10 @@ class Upload(mixins.WithConfig):
     def get_file_payload(self, filepath):
         """Return a file payload object."""
 
-        checksum, length = get_filestats(filepath)
+        checksum, length = utilities.get_filestats(filepath)
         return {
             'local': filepath,
-            'name': get_filename(filepath),
+            'name': utilities.get_filename(filepath),
             'md5': checksum,
             'length': length
         }
@@ -138,6 +107,6 @@ class Upload(mixins.WithConfig):
         collected = []
         for root, dirs, files in os.walk(datapackage):
             collected.extend([os.path.join(root, f) for f in files
-                              if not get_filename(f).startswith('.')])
+                              if not utilities.get_filename(f).startswith('.')])
 
         return collected
