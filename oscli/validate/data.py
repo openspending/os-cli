@@ -7,22 +7,11 @@ from __future__ import unicode_literals
 from goodtables import pipeline
 
 
-def display_report(reports):
-    """Return an output string of text tables."""
-    _reports = []
-    _exclude = ['result_context', 'processor', 'row_name', 'result_category',
-                'column_index', 'column_name', 'result_level']
+class DataValidator(object):
+    """Check that data resources in a data package are valid.
+    """
 
-    for report in reports:
-        generated = report.generate('txt', exclude=_exclude)
-        modified = generated.split('###')
-        _reports.append(modified[1])
-    return '\n\n'.join(_reports)
-
-
-class Checker(object):
-
-    """Check that data resources in a data package are valid."""
+    # Public
 
     def __init__(self, datapackage):
         self.pipeline_options = {'processors': ('schema',)}
@@ -35,6 +24,21 @@ class Checker(object):
     def run(self):
         self.success = self.batch.run()
         return self.success
+
+    @classmethod
+    def display_report(cls, reports):
+        """Return an output string of text tables."""
+        _reports = []
+        _exclude = ['result_context', 'processor', 'row_name', 'result_category',
+                    'column_index', 'column_name', 'result_level']
+
+        for report in reports:
+            generated = report.generate('txt', exclude=_exclude)
+            modified = generated.split('###')
+            _reports.append(modified[1])
+        return '\n\n'.join(_reports)
+
+    # Protected
 
     def _collector(self, pipeline):
         """Collect reports."""

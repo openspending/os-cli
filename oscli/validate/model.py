@@ -10,9 +10,9 @@ import json
 from .. import osdatapackage
 
 
-class Checker(object):
-
-    """Check that a descriptor is a valid Open Spending Data Package."""
+class ModelValidator(object):
+    """Check that a descriptor is a valid Open Spending Data Package.
+    """
 
     def __init__(self, datapackage):
         self.datapackage = datapackage

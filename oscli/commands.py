@@ -8,19 +8,20 @@ import os
 import json
 import click
 from oscli import makemodel as _makemodel
-from oscli import checkmodel as _checkmodel
-from oscli import checkdata as _checkdata
 from oscli import auth as _auth
 from oscli import upload as _upload
 from oscli import utilities
 from oscli import exceptions
 from oscli import compat
 from .config import Config
+from .validate import ModelValidator, DataValidator
 
 
 @click.group()
 def cli():
-    """Open Spending CLI."""
+    """Open Spending CLI.
+
+    """
 
 
 @cli.command()
@@ -61,7 +62,7 @@ def config(action, data):
 
 
 @cli.command()
-@click.argument('subcommand', type=click.Choice(['package', 'data']))
+@click.argument('subcommand', type=click.Choice(['model', 'data']))
 @click.argument('datapackage')
 @click.option('--interactive', is_flag=True)
 def validate(subcommand, datapackage, interactive):
@@ -74,14 +75,15 @@ def validate(subcommand, datapackage, interactive):
 
     """
 
-    # Vaildate package
-    if subcommand == 'package':
+    # Vaildate model
+    if subcommand == 'model':
+
         MSG_SUCCESS = ('Congratulations, the data package looks good!')
         MSG_ERROR = ('While checking the data, we found some found some '
                      'issues: \n{0}\nRead more about required fields in '
                      'Open Spending Data Package here: {1}')
         url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
-        service = _checkmodel.Checker(datapackage)
+        service = ModelValidator(datapackage)
         service.run()
         if service.success:
             click.echo(click.style(MSG_SUCCESS))
@@ -90,6 +92,7 @@ def validate(subcommand, datapackage, interactive):
 
     # Validate data
     else:
+
         MSG_SUCCESS = ('\nCongratulations, the data looks good! You can now move on\n'
                        'to uploading your new data package to Open Spending!')
         MSG_CONTINUE = ('While checking the data, we found some found some issues\n'
@@ -107,7 +110,7 @@ def validate(subcommand, datapackage, interactive):
         DESCRIPTOR = 'datapackage.json'
 
         datapackage = os.path.abspath(datapackage)
-        service = _checkdata.Checker(datapackage)
+        service = DataValidator(datapackage)
         success = service.run()
 
         if success:
@@ -115,7 +118,7 @@ def validate(subcommand, datapackage, interactive):
 
         else:
 
-            report = _checkdata.display_report(service.reports)
+            report = DataValidator.display_report(service.reports)
             if interactive:
                 if click.confirm(click.style(MSG_CONTINUE, fg='red')):
                     click.clear()
