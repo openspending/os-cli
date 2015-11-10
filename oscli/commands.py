@@ -15,6 +15,7 @@ from oscli import upload as _upload
 from oscli import utilities
 from oscli import exceptions
 from oscli import compat
+from .config import Config
 
 
 @click.group()
@@ -23,35 +24,40 @@ def cli():
 
 
 @cli.command()
-def version():
-    """Display the version and exit.
-    """
-
-    msg = 'There is no version tracking yet.'
-    click.echo(msg)
-
-
-@cli.command()
-@click.argument('action', default='read', type=click.Choice(['read', 'locate', 'ensure']))
-def config(action):
-    """Interact with .openspendingrc
+@click.argument(
+    'action', default='read', type=click.Choice(['locate', 'ensure', 'read', 'write']))
+@click.argument('data', default='{}')
+def config(action, data):
+    """Interact with config in .openspendingrc
 
     Args:
     * action: one of 'read', 'locate' or 'ensure'
-        * 'read' will return the currently active config
         * 'locate' will return the location of the currently active config
         * 'ensure' will check a config exists, and write one in $HOME if not
+        * 'read' will return the currently active config
+        * 'write' will add additional JSON data to config and return updated config
 
     """
 
-    if action == 'read':
-        click.echo(json.dumps(utilities.read_config(), ensure_ascii=False))
-
+    # Locate
     if action == 'locate':
-        click.echo(json.dumps(utilities.locate_config(), ensure_ascii=False))
+        click.echo(Config.locate())
 
+    # Ensure
     if action == 'ensure':
-        click.echo(json.dumps(utilities.ensure_config(), ensure_ascii=False))
+        click.echo(json.dumps(Config.ensure(), indent=4, ensure_ascii=False))
+
+    # Read
+    if action == 'read':
+        click.echo(json.dumps(Config.read(), indent=4, ensure_ascii=False))
+
+    # Write
+    if action == 'write':
+        try:
+            data = json.loads(data)
+            click.echo(json.dumps(Config.write(**data), indent=4, ensure_ascii=False))
+        except Exception:
+            raise ValueError('Data is a not valid config in JSON format.')
 
 
 @cli.command()
@@ -61,9 +67,11 @@ def config(action):
 def validate(subcommand, datapackage, interactive):
     """Validate an Open Spending Data Package descriptor/data.
 
-    Subcommands:
-    * package
-    * data
+    Args:
+    * subcommand: one of 'package' or 'data'
+        * 'package' will validate a descriptor
+        * 'data' will validate a data
+
     """
 
     # Vaildate package
@@ -174,6 +182,15 @@ def upload(datapackage):
     service.run(datapackage)
     click.echo(click.style('Your data is now live on Open Spending!',
                            fg='green'))
+
+
+@cli.command()
+def version():
+    """Display the version and exit.
+    """
+
+    msg = 'There is no version tracking yet.'
+    click.echo(msg)
 
 
 if __name__ == '__main__':

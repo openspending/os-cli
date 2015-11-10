@@ -72,8 +72,8 @@ setup(
     classifiers=classifiers,
     entry_points={
         'console_scripts': [
-            'openspending = oscli.main:cli',
-            'os = oscli.main:cli'
+            'openspending = oscli:cli',
+            'os = oscli:cli'
         ]
     }
 )

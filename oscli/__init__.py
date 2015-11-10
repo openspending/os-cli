@@ -10,7 +10,7 @@ from . import makemodel
 from . import auth
 from . import upload
 from . import osdatapackage
-from .main import cli
+from .commands import cli
 
 
 __all__ = ['checkdata', 'checkmodel', 'makemodel', 'auth', 'upload',

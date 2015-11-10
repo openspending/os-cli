@@ -1,4 +1,4 @@
-from . import utilities
+from .config import Config
 from . import exceptions
 
 
@@ -10,7 +10,7 @@ class WithConfig(object):
 
     def __init__(self, config=None):
 
-        self.config = config or utilities.read_config()
+        self.config = config or Config.read()
 
         if self.config is None:
             raise exceptions.ConfigNotFoundError

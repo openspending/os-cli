@@ -87,11 +87,12 @@ A config file looks something like this:
 
 The CLI has a helper command for working with config files: `openspending config`.
 
-* `openspending config read`: return the currently active config as JSON, or null.
 * `openspending config locate`: return the filepath of the currently active config as JSON,
 or null.
 * `openspending config ensure`: return the currently active config as JSON, creating
 a skeleton config first in $HOME if no config is found.
+* `openspending config read`: return the currently active config as JSON, or null.
+* `openspending config write '<json>'`: write additional data to config or create a new config file and return the currently active config as JSON.
 
 So, to configure correctly, do the following:
 
