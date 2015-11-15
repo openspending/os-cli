@@ -8,7 +8,6 @@ import os
 import io
 import json
 import datapackage_validate
-from .. import package
 
 
 class ModelValidator(object):
