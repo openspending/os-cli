@@ -8,105 +8,129 @@ import os
 import io
 import hashlib
 import base64
+import requests
 from requests_futures.sessions import FuturesSession
-from .. import _mock, exceptions, mixins, compat, package, utilities
+from .. import compat, config, exceptions, utilities
 
 
+class Upload(object):
+    """Upload a datapackage to the flat file store.
 
-class Upload(mixins.WithConfig):
+    Args:
+        path (str): Path to the datapackage dir.
+    """
 
-    """Upload a datapackage to the flat file store."""
+    # Public
 
-    def __init__(self, config=None):
-        super(Upload, self).__init__(config=config)
+    AUTHZ_URL = 'https://test-openspending.herokuapp.com/datastore/'
 
-        try:
-            self.backend = _mock.StorageService()
-        except exceptions.InvalidSessionError as e:
-            raise e
+    def __init__(self, path):
+        self.path = path
+        self.config = config.Config.read()
+        with open(os.path.join(self.path, 'datapackage.json')) as file:
+            self.descriptor = json.load(file)
 
-        self.current_pkg = None
+    def run(self):
+        """Run the upload flow.
+        """
+        req_payload = self.__get_payload()
+        res_payload = self.__authorize(res_payload)
+        self.__upload(res_payload)
 
-    def run(self, datapackage):
-        """Run the upload flow."""
-        self.current_pkg = package.OpenSpendingDataPackage(datapackage)
-        payload = list(self.get_payload(datapackage))
-        payload = self.backend.get_upload_access(self.config['api_key'],
-                                                 self.current_pkg.as_dict(),
-                                                 payload)
-        success = self.upload(payload)
-        self.current_pkg = None
-        return success
+    # Private
 
-    def upload(self, payload):
-        """Asyncronously upload a datapackage to Open Spending."""
+    def __get_payload(self):
+        """Get datapackage payload.
+        """
 
-        def _callback(session, response):
-            """Do something when each PUT request finishes."""
+        # Initial payload
+        payload = {
+            'metadata': {
+                'name': self.descriptor['name'],
+                'owner': self.descriptor['owner'],
+            },
+            'filedata': {},
+        }
 
-            _parsed = compat.parse.urlparse(response.url)
-            url = '{0}://{1}{2}'.format(_parsed.scheme, _parsed.netloc,
-                                        _parsed.path)
-            status = response.status_code
+        # Fill filedata
+        for root, dirs, files in os.walk(self.path):
+            for path in files:
+                name = os.path.basename(path)
+                if name.startswith('.'):
+                    continue
+                abspath = os.path.join(root, path)
+                length = os.path.getsize(abspath)
+                md5 = utilities.get_file_md5(abspath)
+                payload['filedata'][path] = {
+                    'name': name,
+                    'length': length,
+                    'md5': md5,
+                }
 
-            if status == 200:
-                text = ('This file is now serving live Open Spending.')
-            else:
-                text = ('Something went wrong with this file. Here is '
-                        'some data we received.\n\n{0}'.format(response.text))
+        # Return payload
+        return payload
 
-            print('FILE (status {0}): {1}\n'.format(status, url, text))
+    def __authorize(self, payload):
+        """Authorize payload to upload to Open Spending.
+        """
 
+        # Make request
+        res = requests.post(
+                self.AUTHZ_URL + 'datastore/',
+                headers={'API-Key': self.config['api-key']},
+                data=json.dumps(payload))
+
+        # Return authorized payload
+        return json.loads(res.data)
+
+    def __upload(self, filedata):
+        """Asyncronously upload a datapackage to Open Spending.
+        """
+
+        # Prepare
         session = FuturesSession()
         futures = []
         streams = []
         uploading = True
 
-        for _file in payload:
-            headers = {'Content-Length': _file['length'],
-                       'Content-MD5': _file['md5'],
-                       'Content-Type': None,
-                       'Connection': None,
-                       'User-Agent': None,
-                       'Accept-Encoding': None,
-                       'Accept': None
+        # Start uploading
+        for file in payload:
+            headers = {
+                'Content-Length': file['length'],
+                'Content-MD5': file['md5'],
+                'Content-Type': None,
+                'Connection': None,
+                'User-Agent': None,
+                'Accept-Encoding': None,
+                'Accept': None,
             }
-            stream = io.open(_file['local'])
+            stream = io.open(file['local'])
             streams.append(stream)
-            future = session.put(_file['upload_url'], data=stream,
-                                 headers=headers,
-                                 params=_file['upload_params'],
-                                 background_callback=_callback)
+            future = session.put(
+                    file['upload_url'],
+                    data=stream,
+                    headers=headers,
+                    params=file['upload_params'],
+                    background_callback=self.__notify)
             futures.append(future)
 
+        # Wait for uploads
         while uploading:
             uploading = not all([future.done() for future in futures])
 
+        # Close streams
         for stream in streams:
             stream.close()
 
-    def get_payload(self, datapackage):
-        """Return a generator of dict with file info."""
-        return (self.get_file_payload(filepath) for
-                filepath in self._walker(datapackage))
-
-    def get_file_payload(self, filepath):
-        """Return a file payload object."""
-
-        checksum, length = utilities.get_filestats(filepath)
-        return {
-            'local': filepath,
-            'name': utilities.get_filename(filepath),
-            'md5': checksum,
-            'length': length
-        }
-
-    def _walker(self, datapackage):
-        """Return all files that match our conditions in a directory."""
-
-        collected = []
-        for root, dirs, files in os.walk(datapackage):
-            collected.extend([os.path.join(root, f) for f in files
-                              if not utilities.get_filename(f).startswith('.')])
-
-        return collected
+    def __nofify(session, response):
+        """Notify about uploading to Open Spending.
+        """
+        parsed = compat.parse.urlparse(response.url)
+        url = '{0}://{1}{2}'.format(parsed.scheme, parsed.netloc, parsed.path)
+        status = response.status_code
+        if status == 200:
+            text = ('This file is now serving live Open Spending.')
+        else:
+            text = ('Something went wrong with this file. Here is '
+                    'some data we received.\n\n{0}'.format(response.text))
+        print('FILE (status {0}): {1}\n'.format(status, url, text))

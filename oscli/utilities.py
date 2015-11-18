@@ -7,23 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-
-
-def map_from_string(mapping_string, separate=',', assign='='):
-
-    """Extract a mapping object from a string.
-
-    Args:
-        * `mapping_string`: a string with expected mapping format
-        * `separate`: separator for properties
-        * `assign`: separator for keys, values
-
-    Example:
-        * key1=value1,key2=value2
-
-    """
-
-    return dict([arg.split(assign) for arg in mapping_string.split(separate)])
+import hashlib
 
 
 def is_datapackage(_path):
@@ -44,3 +28,12 @@ def is_datapackage(_path):
 
     MSG = ('The path is a valid Data Package')
     return True, MSG
+
+def get_file_md5(path):
+    """Get md5 checksum of a file by path.
+    """
+    hash = hashlib.md5()
+    with open(path, "rb") as file:
+        for chunk in iter(lambda: file.read(4096), b""):
+            hash.update(chunk)
+    return hash.hexdigest()
