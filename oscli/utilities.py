@@ -11,7 +11,8 @@ import hashlib
 
 
 def is_datapackage(_path):
-    """Ensure that _path is a Data Package."""
+    """Ensure that _path is a Data Package.
+    """
 
     descriptor_name = 'datapackage.json'
 
