@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from goodtables import pipeline
 
 
-class DataValidator(object):
+class ValidateData(object):
     """Check that data resources in a data package are valid.
     """
 

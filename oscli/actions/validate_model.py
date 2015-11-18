@@ -10,7 +10,7 @@ import json
 import datapackage_validate
 
 
-class ModelValidator(object):
+class ValidateModel(object):
     """Check that a descriptor is a valid Open Spending Data Package.
     """
 

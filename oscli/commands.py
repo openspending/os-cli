@@ -7,8 +7,7 @@ from __future__ import unicode_literals
 import os
 import json
 import click
-from oscli import upload as _upload
-from . import compat, config, validate, utilities
+from . import actions, compat, config, utilities
 
 
 @click.group()
@@ -76,8 +75,8 @@ def command_validate(subcommand, datapackage, interactive):
                      'issues: \n{0}\nRead more about required fields in '
                      'Open Spending Data Package here: {1}')
         url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
-        service = validate.ModelValidator(datapackage)
-        service.run()
+        action = actions.ValidateModel(datapackage)
+        action.run()
         if service.success:
             click.echo(click.style(MSG_SUCCESS))
         else:
@@ -103,8 +102,8 @@ def command_validate(subcommand, datapackage, interactive):
         DESCRIPTOR = 'datapackage.json'
 
         datapackage = os.path.abspath(datapackage)
-        service = validate.DataValidator(datapackage)
-        success = service.run()
+        action = actions.ValidateData(datapackage)
+        success = action.run()
 
         if success:
 
@@ -168,14 +167,14 @@ def upload(datapackage):
         return
 
     try:
-        service = _upload.Upload()
+        action = actions.Upload(datapackage)
     except Exception as exception:
         click.echo(click.style(exception.msg, fg='red'))
         return
 
     click.echo(click.style('Your data is now being uploaded to Open Spending.\n',
                            fg='green'))
-    service.run(datapackage)
+    action.run()
     click.echo(click.style('Your data is now live on Open Spending!',
                            fg='green'))
 
