@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import os
 import json
 import click
-from . import actions, compat, config, utilities
+from . import actions, services, compat, utilities
 
 
 @click.group()
@@ -34,21 +34,21 @@ def command_config(action, data):
 
     # Locate
     if action == 'locate':
-        click.echo(config.Config.locate())
+        click.echo(services.config.locate())
 
     # Ensure
     if action == 'ensure':
-        click.echo(json.dumps(config.Config.ensure(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(services.config.ensure(), indent=4, ensure_ascii=False))
 
     # Read
     if action == 'read':
-        click.echo(json.dumps(config.Config.read(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(services.config.read(), indent=4, ensure_ascii=False))
 
     # Write
     if action == 'write':
         try:
             data = json.loads(data)
-            click.echo(json.dumps(config.Config.write(**data), indent=4, ensure_ascii=False))
+            click.echo(json.dumps(services.config.write(**data), indent=4, ensure_ascii=False))
         except Exception:
             raise ValueError('Data is a not valid config in JSON format.')
 
@@ -139,7 +139,7 @@ def upload(datapackage):
     """
 
     # don't proceed without a config
-    if not config.Config.locate():
+    if not services.config.locate():
         _msg = ('Uploading requires a config file. See the configuration '
                 'section of the README for more information: '
                 'https://github.com/openspending/oscli-poc')

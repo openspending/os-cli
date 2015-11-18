@@ -10,7 +10,7 @@ import hashlib
 import base64
 import requests
 from requests_futures.sessions import FuturesSession
-from .. import compat, config, utilities
+from .. import services, compat, utilities
 
 
 class Upload(object):
@@ -26,7 +26,7 @@ class Upload(object):
 
     def __init__(self, path):
         self.path = path
-        self.config = config.Config.read()
+        self.config = services.config.read()
         with open(os.path.join(self.path, 'datapackage.json')) as file:
             self.descriptor = json.load(file)
 
