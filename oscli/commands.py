@@ -8,7 +8,7 @@ import os
 import json
 import click
 from oscli import upload as _upload
-from . import compat, config, exceptions, validate, utilities
+from . import compat, config, validate, utilities
 
 
 @click.group()
@@ -169,8 +169,8 @@ def upload(datapackage):
 
     try:
         service = _upload.Upload()
-    except (exceptions.ConfigNotFoundError, exceptions.ConfigValueError) as e:
-        click.echo(click.style(e.msg, fg='red'))
+    except Exception as exception:
+        click.echo(click.style(exception.msg, fg='red'))
         return
 
     click.echo(click.style('Your data is now being uploaded to Open Spending.\n',

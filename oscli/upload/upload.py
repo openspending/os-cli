@@ -10,7 +10,7 @@ import hashlib
 import base64
 import requests
 from requests_futures.sessions import FuturesSession
-from .. import compat, config, exceptions, utilities
+from .. import compat, config, utilities
 
 
 class Upload(object):
