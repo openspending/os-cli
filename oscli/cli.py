@@ -16,19 +16,19 @@ def cli():
     """
 
 
-@cli.command(name='config')
+@cli.command()
 @click.argument('action', default='read',
     type=click.Choice(['locate', 'ensure', 'read', 'write']))
 @click.argument('data', default='{}')
-def command_config(action, data):
+def config(action, data):
     """Interact with config in .openspendingrc
 
     Args:
-    * action: one of 'read', 'locate' or 'ensure'
-        * 'locate' will return the location of the currently active config
-        * 'ensure' will check a config exists, and write one in $HOME if not
-        * 'read' will return the currently active config
-        * 'write' will add additional JSON data to config and return updated config
+        action (str): one of 'locate', 'ensure', read', 'write'
+            - 'locate' will return the location of the currently active config
+            - 'ensure' will check a config exists and write one in $HOME if not
+            - 'read' will return the currently active config
+            - 'write' will add additional JSON data to config and return config
 
     """
 
@@ -53,17 +53,19 @@ def command_config(action, data):
             raise ValueError('Data is a not valid config in JSON format.')
 
 
-@cli.command(name='validate')
+@cli.command()
 @click.argument('subcommand', type=click.Choice(['model', 'data']))
 @click.argument('datapackage')
 @click.option('--interactive', is_flag=True)
-def command_validate(subcommand, datapackage, interactive):
+def validate(subcommand, datapackage, interactive):
     """Validate an Open Spending Data Package descriptor/data.
 
     Args:
-    * subcommand: one of 'package' or 'data'
-        * 'package' will validate a descriptor
-        * 'data' will validate a data
+        subcommand (str): one of 'model' or 'data'
+            - 'model' will validate a model
+            - 'data' will validate a data
+        datapackage (str): path to datapackage
+        interactive (bool): use interactive approach
 
     """
 
@@ -136,6 +138,10 @@ def command_validate(subcommand, datapackage, interactive):
 @click.argument('datapackage', default='.', type=click.Path(exists=True))
 def upload(datapackage):
     """Upload an Open Spending Data Package to storage. Requires auth.
+
+    Args:
+        datapackage (str): path to datapackage
+
     """
 
     # don't proceed without a config
