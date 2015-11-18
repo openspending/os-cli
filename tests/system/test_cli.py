@@ -7,23 +7,28 @@ from __future__ import unicode_literals
 import os
 import io
 import json
+import unittest
 import subprocess
 from oscli import utilities
 from oscli import compat
-from tests import base
 
 
-class TestCLI(base.BaseTestCase):
+class cliTest(unittest.TestCase):
+
+    data_dir = os.path.abspath(os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), 'examples'))
 
     def setUp(self):
-        super(TestCLI, self).setUp()
+        self.openfiles = []
         self.dp_valid = os.path.join(self.data_dir, 'dp-valid')
         self.dp_invalid = os.path.join(self.data_dir, 'dp-invalid')
         self.data_valid = os.path.join(self.data_dir, 'data_valid.csv')
         self.data_invalid = os.path.join(self.data_dir, 'data_invalid.csv')
 
     def tearDown(self):
-        super(TestCLI, self).tearDown()
+        if self.openfiles:
+            for f in self.openfiles:
+                f.close()
 
     def test_config(self):
 

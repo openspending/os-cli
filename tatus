@@ -1,0 +1,136 @@
+[1mdiff --git a/oscli/services/config.py b/oscli/services/config.py[m
+[1mindex 78437bd..788640d 100644[m
+[1m--- a/oscli/services/config.py[m
+[1m+++ b/oscli/services/config.py[m
+[36m@@ -84,7 +84,7 @@[m [mdef read(add_default=True):[m
+ [m
+     try:[m
+ [m
+[31m-        # Init[m
+[32m+[m[32m        # Init config[m
+         config = {}[m
+ [m
+         # Default config[m
+[1mdiff --git a/tests/base.py b/tests/base.py[m
+[1mdeleted file mode 100644[m
+[1mindex 0547f17..0000000[m
+[1m--- a/tests/base.py[m
+[1m+++ /dev/null[m
+[36m@@ -1,24 +0,0 @@[m
+[31m-# -*- coding: utf-8 -*-[m
+[31m-from __future__ import absolute_import[m
+[31m-from __future__ import division[m
+[31m-from __future__ import print_function[m
+[31m-from __future__ import unicode_literals[m
+[31m-[m
+[31m-import os[m
+[31m-import unittest[m
+[31m-[m
+[31m-[m
+[31m-class BaseTestCase(unittest.TestCase):[m
+[31m-[m
+[31m-    """Common stuff for tests."""[m
+[31m-[m
+[31m-    data_dir = os.path.abspath(os.path.join([m
+[31m-        os.path.dirname(os.path.dirname(__file__)), 'examples'))[m
+[31m-[m
+[31m-    def setUp(self):[m
+[31m-        self.openfiles = [][m
+[31m-[m
+[31m-    def tearDown(self):[m
+[31m-        if self.openfiles:[m
+[31m-            for f in self.openfiles:[m
+[31m-                f.close()[m
+[1mdiff --git a/tests/test_cli.py b/tests/test_cli.py[m
+[1mdeleted file mode 100644[m
+[1mindex 1e5fda3..0000000[m
+[1m--- a/tests/test_cli.py[m
+[1m+++ /dev/null[m
+[36m@@ -1,87 +0,0 @@[m
+[31m-# -*- coding: utf-8 -*-[m
+[31m-from __future__ import absolute_import[m
+[31m-from __future__ import division[m
+[31m-from __future__ import print_function[m
+[31m-from __future__ import unicode_literals[m
+[31m-[m
+[31m-import os[m
+[31m-import io[m
+[31m-import json[m
+[31m-import subprocess[m
+[31m-from oscli import utilities[m
+[31m-from oscli import compat[m
+[31m-from tests import base[m
+[31m-[m
+[31m-[m
+[31m-class TestCLI(base.BaseTestCase):[m
+[31m-[m
+[31m-    def setUp(self):[m
+[31m-        super(TestCLI, self).setUp()[m
+[31m-        self.dp_valid = os.path.join(self.data_dir, 'dp-valid')[m
+[31m-        self.dp_invalid = os.path.join(self.data_dir, 'dp-invalid')[m
+[31m-        self.data_valid = os.path.join(self.data_dir, 'data_valid.csv')[m
+[31m-        self.data_invalid = os.path.join(self.data_dir, 'data_invalid.csv')[m
+[31m-[m
+[31m-    def tearDown(self):[m
+[31m-        super(TestCLI, self).tearDown()[m
+[31m-[m
+[31m-    def test_config(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'config'][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-        config = utilities.read_config()[m
+[31m-        result = json.loads(result.decode('utf-8').rstrip('\n'))[m
+[31m-[m
+[31m-        self.assertEqual(result, config)[m
+[31m-[m
+[31m-    def test_auth_login(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'auth', 'login'][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-        config = utilities.read_config()[m
+[31m-        result = result.decode('utf-8').rstrip('\n')[m
+[31m-[m
+[31m-        self.assertEqual(result, config.get('token', ''))[m
+[31m-[m
+[31m-    def test_auth_logout(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'auth', 'logout'][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-        config = utilities.read_config()[m
+[31m-        result = result.decode('utf-8').rstrip('\n')[m
+[31m-        self.assertEqual(result, config.get('token', ''))[m
+[31m-[m
+[31m-    # def test_upload(self):[m
+[31m-[m
+[31m-    #     c = ['python', 'oscli/main.py', 'upload', self.dp_valid][m
+[31m-    #     result = subprocess.check_output(c)[m
+[31m-[m
+[31m-    #     self.assertTrue(result)[m
+[31m-[m
+[31m-    def test_makemodel_valid(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'makemodel', self.data_valid][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-[m
+[31m-        self.assertTrue(result)[m
+[31m-[m
+[31m-    def test_makemodel_invalid(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'makemodel', self.data_invalid][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-[m
+[31m-        self.assertTrue(result)[m
+[31m-[m
+[31m-    def test_checkmodel(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'checkmodel', self.dp_valid][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-[m
+[31m-        self.assertTrue(result)[m
+[31m-[m
+[31m-    def test_checkdata(self):[m
+[31m-[m
+[31m-        c = ['python', 'oscli/main.py', 'checkdata', self.dp_valid][m
+[31m-        result = subprocess.check_output(c)[m
+[31m-[m
+[31m-        self.assertTrue(result)[m

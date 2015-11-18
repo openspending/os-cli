@@ -84,7 +84,7 @@ def read(add_default=True):
 
     try:
 
-        # Init
+        # Init config
         config = {}
 
         # Default config
