@@ -65,24 +65,43 @@ def ensure(location='home'):
         with io.open(config_path, mode='w+t', encoding='utf-8') as stream:
             stream.write(json.dumps(SKELETON, indent=4))
             stream.seek(0)
-            return json.loads(stream.read())
+
+        # Return config
+        config = read()
+        return config
 
 
-def read():
+def read(add_default=True):
     """Return the contents of the active config file, or None.
     """
 
     # Get path
     path = locate()
 
+    # No config
+    if not path:
+        return None
+
     try:
 
-        # Return contents
-        if path:
-            with io.open(path, mode='r+t', encoding='utf-8') as stream:
-                return json.loads(stream.read())
+        # Init
+        config = {}
 
-    except ValueError:
+        # Default config
+        if add_default:
+            default_path = os.path.join(
+                    os.path.dirname(__file__), '..', 'config.json')
+            with io.open(default_path, mode='r+t', encoding='utf-8') as stream:
+                config.update(json.loads(stream.read()))
+
+        # User config
+        with io.open(path, mode='r+t', encoding='utf-8') as stream:
+            config.update(json.loads(stream.read()))
+
+        # Return merged
+        return config
+
+    except Exception:
 
         # Raise exception if can't read config
         raise ValueError('Config file is not valid')
@@ -93,7 +112,8 @@ def write(**data):
     """
 
     # Get and update config
-    config = ensure()
+    ensure()
+    config = read(add_default=False)
     config.update(data)
 
     # Get config path
@@ -106,4 +126,5 @@ def write(**data):
         stream.write(json.dumps(config, indent=4))
 
     # Return updated config
+    config = read()
     return config

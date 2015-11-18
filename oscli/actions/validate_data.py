@@ -23,6 +23,8 @@ class ValidateData(object):
         self.success = False
 
     def run(self):
+        """Run validation.
+        """
         self.success = self.batch.run()
         return self.success
 

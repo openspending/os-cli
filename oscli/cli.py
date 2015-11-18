@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import os
 import json
 import click
-from . import actions, services, compat, utilities
+from . import actions, helpers, services, compat
 
 
 @click.group()
@@ -147,7 +147,7 @@ def upload(datapackage):
         return
 
     # is data package
-    _valid, _msg = utilities.is_datapackage(datapackage)
+    _valid, _msg = helpers.is_datapackage(datapackage)
     if not _valid:
         click.echo(click.style(_msg, fg='red'))
         return

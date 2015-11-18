@@ -25,7 +25,8 @@ class ValidateModel(object):
         self.error = None
 
     def run(self):
-
+        """Run validation.
+        """
         valid, errors = datapackage_validate.validate(
             self.descriptor, self.SCHEMA)
         self.success = valid

@@ -10,7 +10,7 @@ import hashlib
 import base64
 import requests
 from requests_futures.sessions import FuturesSession
-from .. import services, compat, utilities
+from .. import helpers, services, compat
 
 
 class Upload(object):
@@ -21,8 +21,6 @@ class Upload(object):
     """
 
     # Public
-
-    AUTHZ_URL = 'https://test-openspending.herokuapp.com/datastore/'
 
     def __init__(self, path):
         self.path = path
@@ -60,7 +58,7 @@ class Upload(object):
                     continue
                 abspath = os.path.join(root, path)
                 length = os.path.getsize(abspath)
-                md5 = utilities.get_file_md5(abspath)
+                md5 = helpers.get_checksum(abspath)
                 payload['filedata'][path] = {
                     'name': name,
                     'length': length,
@@ -76,7 +74,7 @@ class Upload(object):
 
         # Make request
         res = requests.post(
-                self.AUTHZ_URL + 'datastore/',
+                self.config['authz_url'] + 'datastore/',
                 headers={'API-Key': self.config['api-key']},
                 data=json.dumps(payload))
 
