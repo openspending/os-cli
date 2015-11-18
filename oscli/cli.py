@@ -77,10 +77,10 @@ def command_validate(subcommand, datapackage, interactive):
         url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
         action = actions.ValidateModel(datapackage)
         action.run()
-        if service.success:
+        if action.success:
             click.echo(click.style(MSG_SUCCESS))
         else:
-            click.echo(click.style(MSG_ERROR.format(service.error, url)))
+            click.echo(click.style(MSG_ERROR.format(action.error, url)))
 
     # Validate data
     if subcommand == 'data':
