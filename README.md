@@ -18,6 +18,7 @@ Proposals:
 * [Development](#development)
 * [Open Spending Data Package](#open-spending-data-package)
 * [Next Steps](#next-steps)
+* [Guide](GUIDE.md)
 
 ## Usage
 
@@ -26,13 +27,13 @@ data to Open Spending flat data storage.
 
 ### Getting Started
 
-Ensure you have `Python 2.7, 3.3 or 3.4` installed.
+Ensure you have `Python 2.7, 3.3 or 3.4` installed system-wide
+or using virtualenv.
 
-To get started activate virtual environments and install
-dependencies by command:
+To get started install cli:
 
 ```
-source activate.sh
+python setup.py install
 ```
 
 You now have `openspending` and `os` (an alias) on your path.
@@ -42,8 +43,6 @@ See the help:
 ```
 openspending --help
 ```
-
-See `GUIDE.md` for more information.
 
 ### Config
 
