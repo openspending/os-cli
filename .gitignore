@@ -16,3 +16,4 @@ shippable/*
 /docs/_templates
 .openspendingrc
 .cache
+venv/
