@@ -16,12 +16,12 @@ def cli():
     """
 
 
+choices = ['locate', 'ensure', 'read', 'write']
 @cli.command()
-@click.argument('action', default='read',
-    type=click.Choice(['locate', 'ensure', 'read', 'write']))
+@click.argument('action', default='read', type=click.Choice(choices))
 @click.argument('data', default='{}')
 def config(action, data):
-    """Interact with config in .openspendingrc
+    """Interact with config in .openspendingrc,
 
     Args:
         action (str): one of 'locate', 'ensure', read', 'write'
@@ -29,7 +29,6 @@ def config(action, data):
             - 'ensure' will check a config exists and write one in $HOME if not
             - 'read' will return the currently active config
             - 'write' will add additional JSON data to config and return config
-
     """
 
     # Locate
@@ -38,17 +37,20 @@ def config(action, data):
 
     # Ensure
     if action == 'ensure':
-        click.echo(json.dumps(services.config.ensure(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(
+            services.config.ensure(), indent=4, ensure_ascii=False))
 
     # Read
     if action == 'read':
-        click.echo(json.dumps(services.config.read(), indent=4, ensure_ascii=False))
+        click.echo(json.dumps(
+            services.config.read(), indent=4, ensure_ascii=False))
 
     # Write
     if action == 'write':
         try:
             data = json.loads(data)
-            click.echo(json.dumps(services.config.write(**data), indent=4, ensure_ascii=False))
+            click.echo(json.dumps(
+                services.config.write(**data), indent=4, ensure_ascii=False))
         except Exception:
             raise ValueError('Data is a not valid config in JSON format.')
 
@@ -66,7 +68,6 @@ def validate(subcommand, datapackage, interactive):
             - 'data' will validate a data
         datapackage (str): path to datapackage
         interactive (bool): use interactive approach
-
     """
 
     # Vaildate model
@@ -137,52 +138,59 @@ def validate(subcommand, datapackage, interactive):
 @cli.command()
 @click.argument('datapackage', default='.', type=click.Path(exists=True))
 def upload(datapackage):
-    """Upload an Open Spending Data Package to storage. Requires auth.
+    """Upload an Open Spending Data Package to storage.
+
+    Requires valid API key.
 
     Args:
         datapackage (str): path to datapackage
-
     """
 
-    # don't proceed without a config
+    # Don't proceed without a config
     if not services.config.locate():
-        _msg = ('Uploading requires a config file. See the configuration '
+        msg = ('Uploading requires a config file. See the configuration '
                 'section of the README for more information: '
                 'https://github.com/openspending/oscli-poc')
-        click.echo(click.style(_msg, fg='red'))
+        click.echo(click.style(msg, fg='red'))
         return
 
-    # is data package
-    _valid, _msg = helpers.is_datapackage(datapackage)
-    if not _valid:
-        click.echo(click.style(_msg, fg='red'))
-        return
-
+    # Decode datapackage from utf-8
     if isinstance(datapackage, compat.bytes):
         datapackage = datapackage.decode('utf-8')
 
-    # is open spending data package
-    checker = _checkmodel.Checker(datapackage)
+    #  Don't proceed not valid datapackage
+    valid, msg = helpers.is_datapackage(datapackage)
+    if not valid:
+        click.echo(click.style(msg, fg='red'))
+        return
+
+    # Don't proceed not open spending data package
+    checker = actions.ValidateModel(datapackage)
     checker.run()
     if not checker.success:
-        _msg = ('While checking the data, we found some found some '
+        msg = ('While checking the data, we found some found some '
                 'issues: \n{0}\nRead more about required fields '
                 'in Open Spending Data Packages here: {1}')
         url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
-        click.echo(click.style(_msg.format(checker.error, url), fg='red'))
+        click.echo(click.style(msg.format(checker.error, url), fg='red'))
         return
 
+    # Notify about uploading start
+    msg = 'Your data is now being uploaded to Open Spending.'
+    click.echo(click.style(msg, fg='green'))
+
+    # Upload
     try:
         action = actions.Upload(datapackage)
+        action.run()
     except Exception as exception:
-        click.echo(click.style(exception.msg, fg='red'))
+        raise
+        click.echo(click.style(repr(exception), fg='red'))
         return
 
-    click.echo(click.style('Your data is now being uploaded to Open Spending.\n',
-                           fg='green'))
-    action.run()
-    click.echo(click.style('Your data is now live on Open Spending!',
-                           fg='green'))
+    # Notify about uploading end
+    msg = 'Your data is now live on Open Spending!'
+    click.echo(click.style(msg, fg='green'))
 
 
 @cli.command()
@@ -190,6 +198,7 @@ def version():
     """Display the version and exit.
     """
 
+    # Notify no version for now
     msg = 'There is no version tracking yet.'
     click.echo(msg)
 

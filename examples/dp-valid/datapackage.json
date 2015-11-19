@@ -33,6 +33,7 @@
     ],
     "name": "my-new-thing",
     "owner": "user1",
+    "mapping": {},
     "openspending": {
         "mapping": {
             "amount": "amount",

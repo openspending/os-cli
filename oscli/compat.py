@@ -26,7 +26,8 @@ if is_py2:
     numeric_types = (int, long, float)
 
     def csv_reader(data, dialect=csv.excel, **kwargs):
-        """Read text stream (unicode on Py2.7) as CSV."""
+        """Read text stream (unicode on Py2.7) as CSV.
+        """
 
         def iterenc_utf8(data):
             for line in data:
@@ -50,12 +51,14 @@ elif is_py3:
 
 
 def to_bytes(textstring):
-    """Convert a text string to a byte string"""
+    """Convert a text string to a byte string.
+    """
     return textstring.encode('utf-8')
 
 
 def to_builtin_str(textstring):
-    """Convert textstring to the built-in `str` on the runtime."""
+    """Convert textstring to the built-in `str` on the runtime.
+    """
 
     if is_py2:
         return str.encode('utf-8')

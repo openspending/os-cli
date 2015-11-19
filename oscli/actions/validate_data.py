@@ -9,6 +9,9 @@ from goodtables import pipeline
 
 class ValidateData(object):
     """Check that data resources in a data package are valid.
+
+    Args:
+        path (str): Path to the datapackage dir.
     """
 
     # Public
@@ -18,7 +21,7 @@ class ValidateData(object):
         self.batch = pipeline.Batch(
             datapackage, source_type='datapackage',
             pipeline_options=self.pipeline_options,
-            pipeline_post_task=self._collector)
+            pipeline_post_task=self.__collect)
         self.reports = []
         self.success = False
 
@@ -33,20 +36,23 @@ class ValidateData(object):
         """Return an output string of text tables.
         """
 
+        # Prepare
         _reports = []
         _exclude = ['result_context', 'processor', 'row_name', 'result_category',
                     'column_index', 'column_name', 'result_level']
 
+        # Iterate over reports
         for report in reports:
             generated = report.generate('txt', exclude=_exclude)
             modified = generated.split('###')
             _reports.append(modified[1])
 
+        # Return joined reports
         return '\n\n'.join(_reports)
 
-    # Protected
+    # Private
 
-    def _collector(self, pipeline):
+    def __collect(self, pipeline):
         """Collect reports.
         """
         self.reports.append(pipeline.report)

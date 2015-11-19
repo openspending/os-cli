@@ -6,8 +6,9 @@ from __future__ import unicode_literals
 
 import os
 import io
-import hashlib
+import json
 import base64
+import hashlib
 import requests
 from requests_futures.sessions import FuturesSession
 from .. import helpers, services, compat
@@ -32,7 +33,7 @@ class Upload(object):
         """Run the upload flow.
         """
         req_payload = self.__get_payload()
-        res_payload = self.__authorize(res_payload)
+        res_payload = self.__authorize(req_payload)
         self.__upload(res_payload)
 
     # Private
@@ -52,13 +53,12 @@ class Upload(object):
 
         # Fill filedata
         for root, dirs, files in os.walk(self.path):
-            for path in files:
-                name = os.path.basename(path)
+            for name in files:
                 if name.startswith('.'):
                     continue
-                abspath = os.path.join(root, path)
-                length = os.path.getsize(abspath)
-                md5 = helpers.get_checksum(abspath)
+                fullpath = os.path.join(root, name)
+                path = os.path.relpath(fullpath, self.path)
+                md5, length = helpers.get_filestats(fullpath)
                 payload['filedata'][path] = {
                     'name': name,
                     'length': length,
@@ -74,14 +74,14 @@ class Upload(object):
 
         # Make request
         res = requests.post(
-                self.config['authz_url'] + 'datastore/',
-                headers={'API-Key': self.config['api-key']},
+                self.config['authz_url'],
+                headers={'API-Key': self.config['api_key']},
                 data=json.dumps(payload))
 
         # Return authorized payload
-        return json.loads(res.data)
+        return res.json()
 
-    def __upload(self, filedata):
+    def __upload(self, payload):
         """Asyncronously upload a datapackage to Open Spending.
         """
 
@@ -92,23 +92,19 @@ class Upload(object):
         uploading = True
 
         # Start uploading
-        for file in payload:
+        for path, file in payload['filedata'].items():
+            fullpath = os.path.join(self.path, path)
             headers = {
                 'Content-Length': file['length'],
                 'Content-MD5': file['md5'],
-                'Content-Type': None,
-                'Connection': None,
-                'User-Agent': None,
-                'Accept-Encoding': None,
-                'Accept': None,
             }
-            stream = io.open(file['local'])
+            stream = io.open(fullpath)
             streams.append(stream)
             future = session.put(
                     file['upload_url'],
                     data=stream,
                     headers=headers,
-                    params=file['upload_params'],
+                    params=file['upload_query'],
                     background_callback=self.__notify)
             futures.append(future)
 
@@ -120,15 +116,21 @@ class Upload(object):
         for stream in streams:
             stream.close()
 
-    def __nofify(session, response):
+    def __notify(self, session, response):
         """Notify about uploading to Open Spending.
         """
-        parsed = compat.parse.urlparse(response.url)
-        url = '{0}://{1}{2}'.format(parsed.scheme, parsed.netloc, parsed.path)
+
+        # Prepare message
         status = response.status_code
         if status == 200:
-            text = ('This file is now serving live Open Spending.')
+            msg = ('This file is now serving live Open Spending.')
         else:
-            text = ('Something went wrong with this file. Here is '
-                    'some data we received.\n\n{0}'.format(response.text))
-        print('FILE (status {0}): {1}\n'.format(status, url, text))
+            msg = ('Something went wrong with this file. Here is '
+                   'some data we received.\n\n{0}'.format(response.text))
+
+        # Prepare url
+        parsed = compat.parse.urlparse(response.url)
+        url = '{0}://{1}{2}'.format(parsed.scheme, parsed.netloc, parsed.path)
+
+        # Print file status
+        print('FILE (status {0}): {1}'.format(status, url, msg))
