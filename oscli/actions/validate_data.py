@@ -38,8 +38,9 @@ class ValidateData(object):
 
         # Prepare
         _reports = []
-        _exclude = ['result_context', 'processor', 'row_name', 'result_category',
-                    'column_index', 'column_name', 'result_level']
+        _exclude = ['result_context', 'processor', 'row_name',
+                    'result_category', 'column_index', 'column_name',
+                    'result_level']
 
         # Iterate over reports
         for report in reports:

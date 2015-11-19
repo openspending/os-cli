@@ -16,9 +16,10 @@ def cli():
     """
 
 
-choices = ['locate', 'ensure', 'read', 'write']
 @cli.command()
-@click.argument('action', default='read', type=click.Choice(choices))
+@click.argument(
+        'action', default='read',
+        type=click.Choice(['locate', 'ensure', 'read', 'write']))
 @click.argument('data', default='{}')
 def config(action, data):
     """Interact with config in .openspendingrc,
@@ -77,7 +78,8 @@ def validate(subcommand, datapackage, interactive):
         MSG_ERROR = ('While checking the data, we found some found some '
                      'issues: \n{0}\nRead more about required fields in '
                      'Open Spending Data Package here: {1}')
-        url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
+        url = ('https://github.com/openspending/oscli-poc'
+               '#open-spending-data-package')
         action = actions.ValidateModel(datapackage)
         action.run()
         if action.success:
@@ -88,20 +90,27 @@ def validate(subcommand, datapackage, interactive):
     # Validate data
     if subcommand == 'data':
 
-        MSG_SUCCESS = ('\nCongratulations, the data looks good! You can now move on\n'
-                       'to uploading your new data package to Open Spending!')
-        MSG_CONTINUE = ('While checking the data, we found some found some issues\n'
-                        'that need addressing. Shall we take a look?')
-        MSG_CONTEXT = ('IMPORTANT: Not all errors are necessarily because of\n'
-                       'invalid data. It could be that the schema needs adjusting\n'
-                       'in order to represent the data more accurately.')
-        MSG_GUIDE = ('\nWould you like to see our short guide on common schema\n'
-                     'errors and solutions? (Launches a web page in your browser)')
-        MSG_EDIT = ('\nWould you like to edit the schema for this data now? \n'
-                    '(Opens the file in your editor)')
-        MSG_END_CONTINUE = ('\nThat is all for now. Once you have made changes to\n'
-                            'your data and/or schema, try running the ensure process again.')
-        GUIDE_URL = 'https://github.com/openspending/oscli-poc/blob/master/oscli/checkdata/guide.md'
+        MSG_SUCCESS = (
+                '\nCongratulations, the data looks good! You can now move on\n'
+                'to uploading your new data package to Open Spending!')
+        MSG_CONTINUE = (
+                'While checking the data, we found some found some issues\n'
+                'that need addressing. Shall we take a look?')
+        MSG_CONTEXT = (
+                'IMPORTANT: Not all errors are necessarily because of\n'
+                'invalid data. It could be that the schema needs adjusting\n'
+                'in order to represent the data more accurately.')
+        MSG_GUIDE = (
+                '\nWould you like to see our short guide on common schema\n'
+                'errors and solutions? (Launches a web page in your browser)')
+        MSG_EDIT = (
+                '\nWould you like to edit the schema for this data now? \n'
+                '(Opens the file in your editor)')
+        MSG_END_CONTINUE = (
+                '\nThat is all for now. Once you have made changes to\n'
+                'your data and/or schema, try running ensure again.')
+        GUIDE_URL = ('https://github.com/openspending/oscli-poc/'
+                     'blob/master/oscli/checkdata/guide.md')
         DESCRIPTOR = 'datapackage.json'
 
         datapackage = os.path.abspath(datapackage)
@@ -114,7 +123,7 @@ def validate(subcommand, datapackage, interactive):
 
         else:
 
-            report = validate.DataValidator.display_report(service.reports)
+            report = validate.DataValidator.display_report(action.reports)
 
             if interactive:
                 if click.confirm(click.style(MSG_CONTINUE, fg='red')):
@@ -149,8 +158,8 @@ def upload(datapackage):
     # Don't proceed without a config
     if not services.config.locate():
         msg = ('Uploading requires a config file. See the configuration '
-                'section of the README for more information: '
-                'https://github.com/openspending/oscli-poc')
+               'section of the README for more information: '
+               'https://github.com/openspending/oscli-poc')
         click.echo(click.style(msg, fg='red'))
         return
 
@@ -169,9 +178,10 @@ def upload(datapackage):
     checker.run()
     if not checker.success:
         msg = ('While checking the data, we found some found some '
-                'issues: \n{0}\nRead more about required fields '
-                'in Open Spending Data Packages here: {1}')
-        url = 'https://github.com/openspending/oscli-poc#open-spending-data-package'
+               'issues: \n{0}\nRead more about required fields '
+               'in Open Spending Data Packages here: {1}')
+        url = ('https://github.com/openspending/oscli-poc'
+               '#open-spending-data-package')
         click.echo(click.style(msg.format(checker.error, url), fg='red'))
         return
 

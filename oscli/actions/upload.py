@@ -7,8 +7,6 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-import base64
-import hashlib
 import requests
 from requests_futures.sessions import FuturesSession
 from .. import helpers, services, compat

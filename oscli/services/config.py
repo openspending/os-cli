@@ -57,7 +57,7 @@ def ensure(location='home'):
 
         # Get config path
         if location == 'here':
-            config_path = 'here'
+            config_path = here_path
         else:
             config_path = home_path
 
