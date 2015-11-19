@@ -11,8 +11,8 @@ from setuptools import setup, find_packages
 
 DIR = os.path.abspath(os.path.dirname(__file__))
 README = 'README.md'
-METADATA = 'METADATA'
-LICENSE = 'LICENSE'
+METADATA = 'METADATA.json'
+LICENSE = 'LICENSE.txt'
 README_PATH = os.path.join(DIR, README)
 METADATA_PATH = os.path.join(DIR, METADATA)
 
@@ -29,11 +29,9 @@ dependencies = [
     'click',
     'requests',
     'requests-futures',
+    'datapackage-validate',
     'goodtables',
-    'jtskit',
-    'datapackage',
-    'budgetdatapackage',
-    'tabulate',
+    'jtskit<0.5',
     'boto'
 ]
 

@@ -15,3 +15,4 @@ shippable/*
 /docs/_static
 /docs/_templates
 .openspendingrc
+.cache

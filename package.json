@@ -1,0 +1,19 @@
+{
+  "name": "os-datastore-cli",
+  "description": "CLI for checking and loading data into an Open Spending flat file datastore. Not compatible with current version of Open Spending.",
+  "repository": "https://github.com/openspending/os-datastore-cli",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": "^4.1.0",
+    "npm": "^2.14.0"
+  },
+  "scripts": {
+    "check": "npm run review && npm run test",
+    "config": "less oscli/config.json",
+    "review": "pylama oscli",
+    "test": "nosetests tests --with-coverage --cover-package oscli"
+  },
+  "dependencies": {
+  }
+}

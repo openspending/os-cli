@@ -1,1 +1,7 @@
--r requirements/base.txt
+click
+requests
+requests-futures
+datapackage-validate
+goodtables
+jtskit<0.5
+boto

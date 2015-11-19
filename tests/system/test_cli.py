@@ -9,17 +9,17 @@ import io
 import json
 import unittest
 import subprocess
-from oscli import utilities
-from oscli import compat
+import oscli
+from oscli import services, compat
 
 
 class cliTest(unittest.TestCase):
 
-    data_dir = os.path.abspath(os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'examples'))
 
     def setUp(self):
         self.openfiles = []
+        self.data_dir = os.path.join(
+                os.path.dirname(__file__), '..', '..', 'examples')
         self.dp_valid = os.path.join(self.data_dir, 'dp-valid')
         self.dp_invalid = os.path.join(self.data_dir, 'dp-invalid')
         self.data_valid = os.path.join(self.data_dir, 'data_valid.csv')
@@ -32,61 +32,30 @@ class cliTest(unittest.TestCase):
 
     def test_config(self):
 
-        c = ['python', 'oscli/main.py', 'config']
-        result = subprocess.check_output(c)
-        config = utilities.read_config()
-        result = json.loads(result.decode('utf-8').rstrip('\n'))
+        c = ['python', 'debug.py', 'config']
+        expected = services.config.read()
+        actual = subprocess.check_output(c)
+        actual = json.loads(actual.decode('utf-8').rstrip('\n'))
 
-        self.assertEqual(result, config)
-
-    def test_auth_login(self):
-
-        c = ['python', 'oscli/main.py', 'auth', 'login']
-        result = subprocess.check_output(c)
-        config = utilities.read_config()
-        result = result.decode('utf-8').rstrip('\n')
-
-        self.assertEqual(result, config.get('token', ''))
-
-    def test_auth_logout(self):
-
-        c = ['python', 'oscli/main.py', 'auth', 'logout']
-        result = subprocess.check_output(c)
-        config = utilities.read_config()
-        result = result.decode('utf-8').rstrip('\n')
-        self.assertEqual(result, config.get('token', ''))
+        self.assertEqual(actual, expected)
 
     # def test_upload(self):
 
-    #     c = ['python', 'oscli/main.py', 'upload', self.dp_valid]
+    #     c = ['python', 'debug.py', 'upload', self.dp_valid]
     #     result = subprocess.check_output(c)
 
     #     self.assertTrue(result)
 
-    def test_makemodel_valid(self):
+    def test_validate_model(self):
 
-        c = ['python', 'oscli/main.py', 'makemodel', self.data_valid]
+        c = ['python', 'debug.py', 'validate', 'model', self.dp_valid]
         result = subprocess.check_output(c)
 
         self.assertTrue(result)
 
-    def test_makemodel_invalid(self):
+    def test_validate_data(self):
 
-        c = ['python', 'oscli/main.py', 'makemodel', self.data_invalid]
-        result = subprocess.check_output(c)
-
-        self.assertTrue(result)
-
-    def test_checkmodel(self):
-
-        c = ['python', 'oscli/main.py', 'checkmodel', self.dp_valid]
-        result = subprocess.check_output(c)
-
-        self.assertTrue(result)
-
-    def test_checkdata(self):
-
-        c = ['python', 'oscli/main.py', 'checkdata', self.dp_valid]
+        c = ['python', 'debug.py', 'validate', 'data', self.dp_valid]
         result = subprocess.check_output(c)
 
         self.assertTrue(result)

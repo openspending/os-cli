@@ -3,8 +3,6 @@
 The is a minimal, command line implementation to load data into an Open Spending
 flat file datastore.
 
-**This is not compatible with the current version of Open Spending**.
-
 Rather, it is based on ideas in the following Open Spending Enhancement
 Proposals:
 
@@ -13,40 +11,23 @@ Proposals:
 
 ## Jump to section
 
-* [Getting started](#getting-started)
-    * [Installation](#installation)
-    * [Configuration](#configuration)
-    * [Data](#data)
 * [Usage](#usage)
-* [Open Spending Data Package](#open-spending-data-package)
-* [Mock Services](#mock-services)
+* [Development](#development)
 
-## Getting started
+## Usage
 
-### Installation
+This section is intended to be used by non-tech users uploading
+data to Open Spending flat data storage.
 
-Ensure you have Python 2.7, 3.3 or 3.4 installed. A virtual environment is good too.
+### Getting Started
 
-Move into your directory and:
+Ensure you have `Python 2.7, 3.3 or 3.4` installed.
 
-```
-# Get the code
-git clone https://github.com/openspending/oscli-poc.git .
-
-# Install the dependencies
-pip install -r requirements/base.txt
-
-# Additionally, if you want some extra tools for local development
-pip install -r requirements/local.txt
-
-# Additionally, if you want to run the tests
-pip install -r requirements/test.txt
-```
-
-Now, let's install the `openspending` CLI:
+To get started activate virtual environments and install
+dependencies by command:
 
 ```
-python setup.py install
+source activate.sh
 ```
 
 You now have `openspending` and `os` (an alias) on your path.
@@ -57,15 +38,9 @@ See the help:
 openspending --help
 ```
 
-For development purposes run:
+See `GUIDE.md` for more information.
 
-```
-python debug.py --help
-```
-
-### Configuration
-
-#### User settings
+### Config
 
 The `openspending` CLI uses an `.openspendingrc` file to manage various settings
 related to you, the user. When using the CLI, it will look for an
@@ -98,70 +73,6 @@ So, to configure correctly, do the following:
 
 * Create an `.openspendingrc` file as per the above description, or, run
 `openspending config ensure` to add a skeleton file in your $HOME directory
-* Then, choose a user to use from the mock users, and thake that `api_key` as the
-value of `api_key` in your config. The mock usersare as follows (username, api_key):
-    * user1, 0c5f9c932f9c4196aacba5166380775d
-    * user2, a058790b30444991b2a6ad027c6dd619
-    * user3, c57248b227d34abd8e4428f618ef6243
-* Ensure that the `owner` of your data packages corresponds with the username
-you are working with.
-
-#### Mock services
-
-The code has some mock interfaces for services that do not exist yet. One is the
-storage service that will provide access to the Open Spending datastore.
-
-Therefore, if you are testing the upload functionality, you will need to do some
-additional configuration:
-
-* Get an AWS account
-* Get an AWS key pair
-* Create a bucket for Open Spending data in your AWS account
-* Export the following environment variables:
-
-```
-OPENSPENDING_STORAGE_BUCKET_NAME={YOUR_AWS_BUCKET_NAME}
-OPENSPENDING_ACCESS_KEY_ID={YOUR_AWS_ACCESS_KEY_ID}
-OPENSPENDING_SECRET_ACCESS_KEY={YOUR_AWS_SECRET_ACCESS_KEY}
-```
-
-Your bucket also must be configured. Here are some example configurations:
-
-S3 bucket policy:
-
-```
-{
-	"Version": "2008-10-17",
-	"Id": "Policy1380877762691",
-	"Statement": [
-		{
-			"Sid": "Stmt1380877761162",
-			"Effect": "Allow",
-			"Principal": {
-				"AWS": "*"
-			},
-			"Action": "s3:GetObject",
-			"Resource": "arn:aws:s3:::_YOUR_BUCKET_NAME_/*"
-		}
-	]
-}
-```
-
-S3 CORS configuration:
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-    <CORSRule>
-        <AllowedOrigin>*</AllowedOrigin>
-        <AllowedMethod>GET</AllowedMethod>
-        <AllowedMethod>PUT</AllowedMethod>
-        <AllowedMethod>POST</AllowedMethod>
-        <MaxAgeSeconds>3000</MaxAgeSeconds>
-        <AllowedHeader>*</AllowedHeader>
-    </CORSRule>
-</CORSConfiguration>
-```
 
 ### Data
 
@@ -169,7 +80,7 @@ You'll need some spend data in CSV format.
 
 The `examples` directory contains some data to test with.
 
-## Usage
+### Upload
 
 Once you have fully configured your setup, we can get to work.
 
@@ -180,7 +91,7 @@ of that data as part of an Open Spending Data Package.
 Of course, you can start at any step in the sequence if you know that your
 data conforms with the previous steps.
 
-### Step 1. Ensure resources are well formed
+#### Step 1. Ensure resources are well formed
 
 Use the Good Tables CLI to ensure there are no obvious structural errors in
 your resource.
@@ -218,7 +129,7 @@ WELL DONE! THE DATA IS VALID :)
 
 See the [Good Tables documentation](http://goodtables.readthedocs.org/) for more.
 
-### Step 2. Model the data
+#### Step 2. Model the data
 
 Use the `makemodel` subcommand to model the data.
 
@@ -235,7 +146,7 @@ you@machine:~$ openspending makemodel examples/data_valid.csv --mapping id=my_id
 
 See the [makemodel docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-### Step 3. Check the model
+#### Step 3. Check the model
 
 Use the `checkmodel` subcommand to ensure that the Data Package descriptor is valid.
 
@@ -252,7 +163,7 @@ you@machine:~$ openspending checkmodel examples/dp-invalid
 
 See the [checkmodel docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-### Step 4. Check the Data Schema
+#### Step 4. Check the Data Schema
 
 Use the `checkdata` subcommand to ensure that the data conforms to the schema.
 
@@ -264,7 +175,7 @@ you@machine:~$ openspending checkdata examples/dp-invalid
 
 See the [checkdata docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-### Step 5. Authenticate with Open Spending
+#### Step 5. Authenticate with Open Spending
 
 ignore this step for now, but do ensure that you configured your .openspendingrc as described above.
 
@@ -288,7 +199,7 @@ you@machine:~$ openspending auth get_token
 
 See the [auth docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-### Step 5. Upload to the Open Spending datastore
+#### Step 5. Upload to the Open Spending datastore
 
 Use the `upload` subcommand to upload a data package to Open Spending.
 
@@ -298,38 +209,45 @@ you@machine:~$ openspending upload examples/dp-valid
 
 See the [upload docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/main.py) for more documentation.
 
-## Mock services
+## Development
 
-Seeing as this is still at proof-of-concept stage, the code contains some
-basic mocks for services that it requires.
+This section is intended to be used by tech users collaborating
+on this project.
 
-### base.OpenSpendingService
+### Getting Started
 
-`_mock.base.OpenSpendingService` is the base service that others inherit from.
+Ensure you have `nvm` and `Python 2.7, 3.3 or 3.4` installed.
 
-It provides two methods:
+To get started activate virtual environments and install
+dependencies by command:
 
-* `gatekeeper`: accepts a token as an argument, and returns True or False
-based on whether the token is valid. Currently wraps `_accept_token`
-* `_accept_token`: accepts a token as an argument, and returns True or False
-based on whether the token is valid.
+```
+source activate.dev.sh
+```
 
-### AuthService
+To debug the CLI use:
 
-`_mock.AuthService` provides services for login and logout.
+```
+python debug.py --help
+```
 
-* `get_token`: Return a dummy token. Currently, having a token indicates the user
-is authenticated. In a proper implementation, tokens would be signed, have
-expiry, and so on.
+### Reviewing
 
-### StorageService
+The project follow the next style guides:
+- [Open Knowledge Coding Standards and Style Guide](https://github.com/okfn/coding-standards)
+- [PEP 8 - Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
 
-`_mock.StorageService` provides services for interacting with Open Spending
-file storage. This includes connecting to a bucket, and providing methods to
-manage uploads of data packages.
+To check the project against Python style guide:
+```
+$ npm run review
+```
+### Testing
 
-* `get_upload_access`: Ultimately provides temporary URLs that are used to upload
-files in data packages.
+To run tests with coverage check:
+```
+$ npm run test
+```
+Coverage data will be in the `.coverage` file.
 
 ## Open Spending Data Package
 
