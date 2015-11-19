@@ -1,5 +1,8 @@
 # OSCLI
 
+[![Travis](https://img.shields.io/travis/openspending/os-datastore-cli.svg)](https://travis-ci.org/openspending/os-datastore-cli)
+[![Coveralls](http://img.shields.io/coveralls/openspending/os-datastore-cli.svg?branch=master)](https://coveralls.io/r/openspending/os-datastore-cli?branch=master)
+
 The is a minimal, command line implementation to load data into an Open Spending
 flat file datastore.
 
