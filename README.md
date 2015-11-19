@@ -13,6 +13,8 @@ Proposals:
 
 * [Usage](#usage)
 * [Development](#development)
+* [Open Spending Data Package](#open-spending-data-package)
+* [Next Steps](#next-steps)
 
 ## Usage
 
