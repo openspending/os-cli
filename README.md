@@ -175,13 +175,13 @@ See the [validate docstring](https://github.com/openspending/oscli-poc/blob/mast
 Use the `validate data` subcommand to ensure that the data conforms to the schema.
 
 ```
-you@machine:~$ openspending validate data examples/dp-valid
+$ openspending validate data examples/dp-valid
 ```
 
 To see how it looks for invalid data:
 
 ```
-you@machine:~$ openspending validate data examples/dp-invalid
+$ openspending validate data examples/dp-invalid
 ```
 
 See the [validate docstring](https://github.com/openspending/oscli-poc/blob/master/oscli/cli.py) for more documentation.
@@ -211,13 +211,13 @@ To get started activate virtual environments and install
 dependencies by command:
 
 ```
-source activate.dev.sh
+$ source activate.dev.sh
 ```
 
 To debug the CLI use:
 
 ```
-python debug.py --help
+$ python debug.py --help
 ```
 
 ### Reviewing
