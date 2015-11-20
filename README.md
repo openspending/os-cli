@@ -205,10 +205,11 @@ on this project.
 
 ### Getting Started
 
-Ensure you have `nvm` and `Python 2.7, 3.3 or 3.4` installed.
+Ensure you have `nvm` and `Python` installed.
 
-To get started activate virtual environments and install
-dependencies by command:
+To get started activate virtual environments, install
+dependencies and add pre-commit hook to review and test code
+by command:
 
 ```
 $ source activate.sh
