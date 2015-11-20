@@ -18,6 +18,40 @@ If you are encountering issues modeling your data, we recommend you take a
 look at the specification (it is quite short), particularly the section on
 [Types and Formats](http://dataprotocols.org/json-table-schema/#field-types-and-formats).
 
+## Open Spending Data Package
+
+Open Spending Data Package is a [Tabular Data Package](http://dataprotocols.org/tabular-data-package/).
+
+Open Spending Data Package is described in [OSEP #4](http://labs.openspending.org/osep/04-openspending-data-package.html).
+
+The following fields are `REQUIRED` in an Open Spending Data Package:
+
+**Metadata fields**
+
+Metadata fields are located directly on the descriptor object. These required
+fields are in addition to the required fields for all
+[Tabular Data Packages](http://dataprotocols.org/tabular-data-package/).
+
+* `owner`: The `owner` field is a `STRING` which is the username of the
+person or organization entity in Open Spending that the package belongs to.
+* `openspending`: The `openspending` field is a `HASH` which `MAY` have a key named `mapping`.
+* `openspending.mapping`: The `openspending.mapping` field is a `HASH` where each
+key is a resource field, and the value is a field fond in the resource.
+In this way, it is possible to provide compliant Open Spending data without making extensive
+changes to existing data files.
+* `currency`: The currency of the data.
+
+**Resource fields**
+
+Resource fields are located on each object in the `resources` array.
+
+The only required fields are `id` and `amount`. However, of the `openspending.mapping`
+object in the metadata declares a mapping for one or both of `id` and `amount`, then
+those fields are required; not `id` and `amount`.
+
+* `id`: A string which is a unique identifier for this line
+* `amount`: The monetary amount of this line
+
 ## Common issues
 
 There are several common issues encountered due to mismatch between the schema
