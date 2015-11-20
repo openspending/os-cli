@@ -142,7 +142,8 @@ Modeling the data means:
 * Inferring a schema for the data resources therein (Data Packages use [JSON Table Schema](http://dataprotocols.org/json-table-schema/)).
 
 ```
-$ jsontableschema infer examples/data_valid.csv```
+$ jsontableschema infer examples/data_valid.csv
+```
 
 **Note:** If your data features both `id` and `amount` fields, then you are not required to provide a mapping via the command line.
 
