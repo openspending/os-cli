@@ -108,7 +108,7 @@ class Upload(object):
 
         # Wait for uploads
         while uploading:
-            uploading = not all([future.done() for future in futures])
+            uploading = not all([item.done() for item in futures])
 
         # Close streams
         for stream in streams:
