@@ -1,8 +1,29 @@
 {
-  "name": "os-datastore-cli",
-  "description": "CLI for checking and loading data into an Open Spending flat file datastore. Not compatible with current version of Open Spending.",
+
+  "name": "OSCLI",
+  "description": "A command line interface to load data into Open Spending.",
+  "version": "0.1.0-alpha",
+  "slug": "oscli",
+  "author": "Open Knowledge Foundation",
+  "author_email": "info@okfn.org",
   "repository": "https://github.com/openspending/os-datastore-cli",
-  "license": "MIT",
+  "license": "AGPL",
+  "keywords": "open spending",
+  "classifiers": [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+  ],
+
   "private": true,
   "engines": {
     "node": "^4.1.0",
@@ -13,7 +34,6 @@
     "config": "less oscli/config.json",
     "review": "pylama oscli",
     "test": "nosetests tests --with-coverage --cover-package oscli"
-  },
-  "dependencies": {
   }
+
 }
