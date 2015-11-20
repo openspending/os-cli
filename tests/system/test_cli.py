@@ -9,8 +9,9 @@ import io
 import json
 import unittest
 import subprocess
+from click.testing import CliRunner
 import oscli
-from oscli import services, compat
+from oscli import services
 
 
 class cliTest(unittest.TestCase):
@@ -28,9 +29,9 @@ class cliTest(unittest.TestCase):
 
     # Helpers
 
-    def check(self, *args):
-        command =  ' '.join(['python -m oscli.cli'] + list(args))
-        return subprocess.check_output(command, shell=True)
+    def invoke(self, *args):
+        runner = CliRunner()
+        return runner.invoke(oscli.cli, args)
 
     def tearDown(self):
         if self.openfiles:
@@ -38,38 +39,36 @@ class cliTest(unittest.TestCase):
                 f.close()
 
     def test_config_locate(self):
+        result = self.invoke('config', 'locate')
+        actual = result.output.rstrip('\n')
         expected = services.config.locate()
-        actual = self.check('config locate')
-        actual = actual.decode('utf-8').rstrip('\n')
         self.assertEqual(actual, expected)
 
     def test_config_read(self):
+        result = self.invoke('config', 'read')
+        actual = json.loads(result.output.rstrip('\n'))
         expected = services.config.read()
-        actual = self.check('config read')
-        actual = json.loads(actual.decode('utf-8').rstrip('\n'))
         self.assertEqual(actual, expected)
 
     def test_validate_model_valid(self):
-        actual = self.check('validate model', self.dp_valid)
-        self.assertTrue(actual)
+        result = self.invoke('validate', 'model', self.dp_valid)
+        self.assertEqual(result.exit_code, 0)
 
     def test_validate_model_invalid(self):
-        self.assertRaises(
-                subprocess.CalledProcessError,
-                self.check, 'validate model', self.dp_invalid)
+        result = self.invoke('validate', 'model', self.dp_invalid)
+        self.assertEqual(result.exit_code, 1)
 
     def test_validate_data_valid(self):
-        actual = self.check('validate data', self.dp_valid)
-        self.assertTrue(actual)
+        result = self.invoke('validate', 'data', self.dp_valid)
+        self.assertEqual(result.exit_code, 0)
 
     def test_validate_data_invalid(self):
-        self.assertRaises(
-                subprocess.CalledProcessError,
-                self.check, 'validate data', self.dp_invalid)
+        result = self.invoke('validate', 'data', self.dp_invalid)
+        self.assertEqual(result.exit_code, 1)
 
     # def test_upload(self):
 
     #     c = ['python', '-m' 'oscli.cli',  'upload', self.dp_valid]
-    #     result = subprocess.check_output(c)
+    #     result = subprocess.invoke_output(c)
 
     #     self.assertTrue(result)
