@@ -14,11 +14,10 @@ Proposals:
 
 ## Jump to section
 
+* [Guide](GUIDE.md)
 * [Usage](#usage)
 * [Development](#development)
-* [Open Spending Data Package](#open-spending-data-package)
 * [Next Steps](#next-steps)
-* [Guide](GUIDE.md)
 
 ## Usage
 
