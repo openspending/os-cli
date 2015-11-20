@@ -30,7 +30,6 @@ class cliTest(unittest.TestCase):
 
     def check(self, *args):
         command =  ' '.join(['python -m oscli.cli'] + list(args))
-        print(command)
         return subprocess.check_output(command, shell=True)
 
     def tearDown(self):
@@ -50,20 +49,20 @@ class cliTest(unittest.TestCase):
         actual = json.loads(actual.decode('utf-8').rstrip('\n'))
         self.assertEqual(actual, expected)
 
-    def test_validate_model_with_valid(self):
+    def test_validate_model_valid(self):
         actual = self.check('validate model', self.dp_valid)
         self.assertTrue(actual)
 
-    def test_validate_model_with_invalid(self):
+    def test_validate_model_invalid(self):
         self.assertRaises(
                 subprocess.CalledProcessError,
                 self.check, 'validate model', self.dp_invalid)
 
-    def test_validate_data_with_valid(self):
+    def test_validate_data_valid(self):
         actual = self.check('validate data', self.dp_valid)
         self.assertTrue(actual)
 
-    def test_validate_data_with_invalid(self):
+    def test_validate_data_invalid(self):
         self.assertRaises(
                 subprocess.CalledProcessError,
                 self.check, 'validate data', self.dp_invalid)
