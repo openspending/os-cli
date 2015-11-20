@@ -32,7 +32,7 @@ class cliTest(unittest.TestCase):
 
     def test_config(self):
 
-        c = ['python', 'debug.py', 'config']
+        c = ['python', '-m' 'oscli.cli', 'config']
         expected = services.config.read()
         actual = subprocess.check_output(c)
         actual = json.loads(actual.decode('utf-8').rstrip('\n'))
@@ -41,21 +41,21 @@ class cliTest(unittest.TestCase):
 
     # def test_upload(self):
 
-    #     c = ['python', 'debug.py', 'upload', self.dp_valid]
+    #     c = ['python', '-m' 'oscli.cli',  'upload', self.dp_valid]
     #     result = subprocess.check_output(c)
 
     #     self.assertTrue(result)
 
     def test_validate_model(self):
 
-        c = ['python', 'debug.py', 'validate', 'model', self.dp_valid]
+        c = ['python', '-m' 'oscli.cli',  'validate', 'model', self.dp_valid]
         result = subprocess.check_output(c)
 
         self.assertTrue(result)
 
     def test_validate_data(self):
 
-        c = ['python', 'debug.py', 'validate', 'data', self.dp_valid]
+        c = ['python', '-m' 'oscli.cli',  'validate', 'data', self.dp_valid]
         result = subprocess.check_output(c)
 
         self.assertTrue(result)

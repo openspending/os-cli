@@ -211,13 +211,13 @@ To get started activate virtual environments and install
 dependencies by command:
 
 ```
-$ source activate.dev.sh
+$ source activate.sh
 ```
 
 To debug the CLI use:
 
 ```
-$ python debug.py --help
+$ python -m oscli/cli --help
 ```
 
 ### Reviewing
