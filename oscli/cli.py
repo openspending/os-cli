@@ -74,74 +74,49 @@ def validate(subcommand, datapackage, interactive):
     # Vaildate model
     if subcommand == 'model':
 
-        MSG_SUCCESS = ('Congratulations, the data package looks good!')
-        MSG_ERROR = ('While checking the data, we found some found some '
+        # Prepare
+        msg_success = ('Congratulations, the data package looks good!')
+        msg_error = ('While checking the data, we found some found some '
                      'issues: \n{0}\nRead more about required fields in '
                      'Open Spending Data Package here: {1}')
-        url = ('https://github.com/openspending/oscli-poc'
-               '#open-spending-data-package')
+        url = ('https://github.com/dataprotocols/schemas/blob/master/'
+               'fiscal-data-package.json')
+
+        # Run action
         action = actions.ValidateModel(datapackage)
         action.run()
         if action.success:
-            click.echo(click.style(MSG_SUCCESS))
+            click.echo(click.style(msg_success))
         else:
-            click.echo(click.style(MSG_ERROR.format(action.error, url)))
+            click.echo(click.style(msg_error.format(action.error, url)))
+            exit(1)
 
     # Validate data
     if subcommand == 'data':
 
-        MSG_SUCCESS = (
+        # Prepare
+        msg_success = (
                 '\nCongratulations, the data looks good! You can now move on\n'
                 'to uploading your new data package to Open Spending!')
-        MSG_CONTINUE = (
-                'While checking the data, we found some found some issues\n'
-                'that need addressing. Shall we take a look?')
-        MSG_CONTEXT = (
+        msg_context = (
                 'IMPORTANT: Not all errors are necessarily because of\n'
                 'invalid data. It could be that the schema needs adjusting\n'
                 'in order to represent the data more accurately.')
-        MSG_GUIDE = (
-                '\nWould you like to see our short guide on common schema\n'
-                'errors and solutions? (Launches a web page in your browser)')
-        MSG_EDIT = (
-                '\nWould you like to edit the schema for this data now? \n'
-                '(Opens the file in your editor)')
-        MSG_END_CONTINUE = (
-                '\nThat is all for now. Once you have made changes to\n'
-                'your data and/or schema, try running ensure again.')
-        GUIDE_URL = ('https://github.com/openspending/oscli-poc/'
-                     'blob/master/oscli/checkdata/guide.md')
-        DESCRIPTOR = 'datapackage.json'
+        guide_url = ('https://github.com/openspending/os-datastore-cli/'
+                     'blob/master/GUIDE.md')
 
-        datapackage = os.path.abspath(datapackage)
+        # Run action
         action = actions.ValidateData(datapackage)
         success = action.run()
-
         if success:
-
-            click.echo(click.style(MSG_SUCCESS, fg='green'))
-
+            click.echo(click.style(msg_success, fg='green'))
         else:
-
-            report = validate.DataValidator.display_report(action.reports)
-
-            if interactive:
-                if click.confirm(click.style(MSG_CONTINUE, fg='red')):
-                    click.clear()
-                    click.echo(click.style(report, fg='blue'))
-                    click.echo(click.style(MSG_CONTEXT, fg='yellow'))
-                if click.confirm(click.style(MSG_GUIDE, fg='yellow')):
-                    click.launch(GUIDE_URL)
-                if click.confirm(click.style(MSG_EDIT, fg='yellow')):
-                    click.edit(filename=os.path.join(datapackage, DESCRIPTOR))
-
-            else:
-                click.echo(click.style(report, fg='blue'))
-                click.echo(click.style(MSG_CONTEXT, fg='yellow'))
-                click.echo('Read the guide for help:\n')
-                click.echo(GUIDE_URL)
-
-            click.echo(click.style(MSG_END_CONTINUE, fg='green'))
+            report = actions.ValidateData.display_report(action.reports)
+            click.echo(click.style(report, fg='blue'))
+            click.echo(click.style(msg_context, fg='yellow'))
+            click.echo('Read the guide for help:\n')
+            click.echo(guide_url)
+            exit(1)
 
 
 @cli.command()
@@ -155,23 +130,23 @@ def upload(datapackage):
         datapackage (str): path to datapackage
     """
 
+    # Decode datapackage from utf-8
+    if isinstance(datapackage, compat.bytes):
+        datapackage = datapackage.decode('utf-8')
+
     # Don't proceed without a config
     if not services.config.locate():
         msg = ('Uploading requires a config file. See the configuration '
                'section of the README for more information: '
                'https://github.com/openspending/oscli-poc')
         click.echo(click.style(msg, fg='red'))
-        return
-
-    # Decode datapackage from utf-8
-    if isinstance(datapackage, compat.bytes):
-        datapackage = datapackage.decode('utf-8')
+        exit(1)
 
     #  Don't proceed not valid datapackage
     valid, msg = helpers.is_datapackage(datapackage)
     if not valid:
         click.echo(click.style(msg, fg='red'))
-        return
+        exit(1)
 
     # Don't proceed not open spending data package
     checker = actions.ValidateModel(datapackage)
@@ -183,7 +158,7 @@ def upload(datapackage):
         url = ('https://github.com/openspending/oscli-poc'
                '#open-spending-data-package')
         click.echo(click.style(msg.format(checker.error, url), fg='red'))
-        return
+        exit(1)
 
     # Notify about uploading start
     msg = 'Your data is now being uploaded to Open Spending.'
@@ -213,5 +188,6 @@ def version():
     click.echo(msg)
 
 
+# Run `python -m oscli/cli`
 if __name__ == '__main__':
     cli()

@@ -31,25 +31,25 @@ class ValidateData(object):
         self.success = self.batch.run()
         return self.success
 
-    @classmethod
-    def display_report(cls, reports):
+    @staticmethod
+    def display_report(reports):
         """Return an output string of text tables.
         """
 
         # Prepare
-        _reports = []
-        _exclude = ['result_context', 'processor', 'row_name',
+        exclude = ['result_context', 'processor', 'row_name',
                     'result_category', 'column_index', 'column_name',
                     'result_level']
 
         # Iterate over reports
+        new_reports = []
         for report in reports:
-            generated = report.generate('txt', exclude=_exclude)
+            generated = report.generate('txt', exclude=exclude)
             modified = generated.split('###')
-            _reports.append(modified[1])
+            new_reports.append(modified[1])
 
-        # Return joined reports
-        return '\n\n'.join(_reports)
+        # Return joined new reports
+        return '\n\n'.join(new_reports)
 
     # Private
 

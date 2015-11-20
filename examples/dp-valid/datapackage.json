@@ -33,7 +33,21 @@
     ],
     "name": "my-new-thing",
     "owner": "user1",
-    "mapping": {},
+    "title": "title",
+    "mapping": {
+        "measures": [
+            {
+                "name": "name",
+                "source": "source",
+                "currency": "USD"
+            }
+        ],
+        "dimensions": [
+            {
+                "name": "name"
+            }
+        ]
+    },
     "openspending": {
         "mapping": {
             "amount": "amount",

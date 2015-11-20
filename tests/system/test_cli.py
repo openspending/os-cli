@@ -15,6 +15,7 @@ from oscli import services, compat
 
 class cliTest(unittest.TestCase):
 
+    # Actions
 
     def setUp(self):
         self.openfiles = []
@@ -25,19 +26,47 @@ class cliTest(unittest.TestCase):
         self.data_valid = os.path.join(self.data_dir, 'data_valid.csv')
         self.data_invalid = os.path.join(self.data_dir, 'data_invalid.csv')
 
+    # Helpers
+
+    def check(self, *args):
+        command =  ' '.join(['python -m oscli.cli'] + list(args))
+        print(command)
+        return subprocess.check_output(command, shell=True)
+
     def tearDown(self):
         if self.openfiles:
             for f in self.openfiles:
                 f.close()
 
-    def test_config(self):
-
-        c = ['python', '-m' 'oscli.cli', 'config']
-        expected = services.config.read()
-        actual = subprocess.check_output(c)
-        actual = json.loads(actual.decode('utf-8').rstrip('\n'))
-
+    def test_config_locate(self):
+        expected = services.config.locate()
+        actual = self.check('config locate')
+        actual = actual.decode('utf-8').rstrip('\n')
         self.assertEqual(actual, expected)
+
+    def test_config_read(self):
+        expected = services.config.read()
+        actual = self.check('config read')
+        actual = json.loads(actual.decode('utf-8').rstrip('\n'))
+        self.assertEqual(actual, expected)
+
+    def test_validate_model_with_valid(self):
+        actual = self.check('validate model', self.dp_valid)
+        self.assertTrue(actual)
+
+    def test_validate_model_with_invalid(self):
+        self.assertRaises(
+                subprocess.CalledProcessError,
+                self.check, 'validate model', self.dp_invalid)
+
+    def test_validate_data_with_valid(self):
+        actual = self.check('validate data', self.dp_valid)
+        self.assertTrue(actual)
+
+    def test_validate_data_with_invalid(self):
+        self.assertRaises(
+                subprocess.CalledProcessError,
+                self.check, 'validate data', self.dp_invalid)
 
     # def test_upload(self):
 
@@ -45,17 +74,3 @@ class cliTest(unittest.TestCase):
     #     result = subprocess.check_output(c)
 
     #     self.assertTrue(result)
-
-    def test_validate_model(self):
-
-        c = ['python', '-m' 'oscli.cli',  'validate', 'model', self.dp_valid]
-        result = subprocess.check_output(c)
-
-        self.assertTrue(result)
-
-    def test_validate_data(self):
-
-        c = ['python', '-m' 'oscli.cli',  'validate', 'data', self.dp_valid]
-        result = subprocess.check_output(c)
-
-        self.assertTrue(result)
