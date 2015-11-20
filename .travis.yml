@@ -5,12 +5,12 @@ python:
   - 3.4
 
 install:
-  - pip install --upgrade -r requirements.txt
-  - pip install --upgrade -r requirements.dev.txt
+  - pip install -r requirements.txt
+  - pip install -r requirements.dev.txt
 
 script:
   - pylama oscli
-  - python debug.py config ensure
+  - python -m oscli.cli config ensure
   - nosetests tests --with-coverage --cover-package oscli
 
 after_success:
