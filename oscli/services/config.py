@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 import json
+from .. import compat
 
 
 FILENAME = '.openspendingrc'
@@ -63,7 +64,7 @@ def ensure(location='home'):
 
         # Create and return skeleton
         with io.open(config_path, mode='w+t', encoding='utf-8') as stream:
-            stream.write(json.dumps(SKELETON, indent=4))
+            stream.write(compat.str(json.dumps(SKELETON, indent=4)))
             stream.seek(0)
 
         # Return config
