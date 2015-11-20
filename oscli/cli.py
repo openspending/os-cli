@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import json
 import click
 from . import actions, helpers, services, compat
+click.disable_unicode_literals_warning = True
 
 
 @click.group()
