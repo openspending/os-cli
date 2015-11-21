@@ -1,4 +1,5 @@
 pylama
+mock
 nose
 coverage
 coveralls
