@@ -93,6 +93,12 @@ class cliTest(unittest.TestCase):
         expected = services.config.read()
         self.assertEqual(actual, expected)
 
+    def test_config_read_not_valid(self):
+        with io.open(self.herepath, 'w', encoding='utf-8') as file:
+            file.write('bad json')
+        result = self.invoke('config', 'read')
+        self.assertNotEqual(result.exit_code, 0)
+
     def test_validate_model_valid(self):
         result = self.invoke('validate', 'model', self.dp_valid)
         self.assertEqual(result.exit_code, 0)

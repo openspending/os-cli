@@ -24,7 +24,8 @@ class Upload(object):
     def __init__(self, path):
         self.path = path
         self.config = services.config.read()
-        with open(os.path.join(self.path, 'datapackage.json')) as file:
+        descrpath = os.path.join(self.path, 'datapackage.json')
+        with io.open(descrpath, encoding='utf-8') as file:
             self.descriptor = json.load(file)
 
     def run(self):
@@ -96,7 +97,7 @@ class Upload(object):
                 'Content-Length': file['length'],
                 'Content-MD5': file['md5'],
             }
-            stream = io.open(fullpath)
+            stream = io.open(fullpath, encoding='utf-8')
             streams.append(stream)
             future = session.put(
                     file['upload_url'],

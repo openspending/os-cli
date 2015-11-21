@@ -43,9 +43,8 @@ def ensure():
     # Need to create
     if not path:
         path = HOMEPATH
-        with io.open(path, mode='w+t', encoding='utf-8') as stream:
-            stream.write(compat.str(json.dumps(SKELETON, indent=4)))
-            stream.seek(0)
+        with io.open(path, 'w', encoding='utf-8') as file:
+            file.write(compat.str(json.dumps(SKELETON, indent=4)))
 
     # Return path
     return path
@@ -63,13 +62,13 @@ def read(add_default=True):
 
     # Default config
     if add_default:
-        with io.open(DEFAULTPATH, mode='r+t', encoding='utf-8') as stream:
-            config.update(json.loads(stream.read()))
+        with io.open(DEFAULTPATH, encoding='utf-8') as file:
+            config.update(json.loads(file.read()))
 
     # User config
     if path:
-        with io.open(path, mode='r+t', encoding='utf-8') as stream:
-            contents = stream.read()
+        with io.open(path, encoding='utf-8') as file:
+            contents = file.read()
             if contents:
                 try:
                     config.update(json.loads(contents))
@@ -93,10 +92,8 @@ def write(**data):
     path = locate()
 
     # Write updated config
-    with io.open(path, mode='w+t', encoding='utf-8') as stream:
-        stream.seek(0)
-        stream.truncate()
-        stream.write(json.dumps(config, indent=4))
+    with io.open(path, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(config, indent=4))
 
     # Return updated config
     config = read()
