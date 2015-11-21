@@ -93,7 +93,7 @@ def write(**data):
 
     # Write updated config
     with io.open(path, 'w', encoding='utf-8') as file:
-        file.write(json.dumps(config, indent=4))
+        file.write(compat.str(json.dumps(config, indent=4)))
 
     # Return updated config
     config = read()
