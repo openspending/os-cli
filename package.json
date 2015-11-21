@@ -33,7 +33,7 @@
     "check": "npm run review && npm run test",
     "config": "less oscli/config.json",
     "review": "pylama oscli",
-    "test": "nosetests tests --with-coverage --cover-package oscli"
+    "test": "nosetests tests -sv --with-coverage --cover-package oscli"
   }
 
 }
