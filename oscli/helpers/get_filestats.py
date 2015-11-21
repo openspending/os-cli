@@ -9,7 +9,7 @@ def get_filestats(filepath, blocksize=65536):
     """Get stats on a file via iteration over its contents.
 
     Returns:
-        (tuple) A tuple of (md5, length)
+        (str, str) A tuple of (md5, length)
     """
 
     # Prepare hasher
@@ -17,7 +17,7 @@ def get_filestats(filepath, blocksize=65536):
     length = 0
 
     # Iterate over file
-    with io.open(filepath, mode='r+b') as stream:
+    with io.open(filepath, mode='rb') as stream:
         chunk = stream.read(blocksize)
         while len(chunk) > 0:
             hasher.update(chunk)

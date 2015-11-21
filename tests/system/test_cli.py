@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import os
@@ -27,7 +27,6 @@ class cliTest(unittest.TestCase):
     def setUp(self):
 
         # Data packages
-        self.openfiles = []
         self.data_dir = os.path.join(
                 os.path.dirname(__file__), '..', '..', 'examples')
         self.dp_valid = os.path.join(self.data_dir, 'dp-valid')
@@ -41,9 +40,6 @@ class cliTest(unittest.TestCase):
         patch.object(services.config, 'HOMEPATH', self.homepath).start()
 
     def tearDown(self):
-        if self.openfiles:
-            for file in self.openfiles:
-                file.close()
         try:
             os.remove(self.herepath)
             os.remove(self.homepath)
