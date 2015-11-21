@@ -10,7 +10,6 @@ install:
 
 script:
   - pylama oscli
-  - python -m oscli.cli config ensure
   - nosetests tests --with-coverage --cover-package oscli
 
 after_success:
