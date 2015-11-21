@@ -10,102 +10,81 @@ import json
 from .. import compat
 
 
-FILENAME = '.openspendingrc'
 SKELETON = {'api_key': ''}
+FILENAME = '.openspendingrc'
+HEREPATH = os.path.join(os.getcwd(), FILENAME)
+HOMEPATH = os.path.join(os.path.expanduser('~'), FILENAME)
+DEFAULTPATH = os.path.join(os.path.dirname(__file__), '..', 'config.json')
 
 
 def locate():
     """Return the path of the active config file, or None.
     """
 
-    # Get pathes
-    here = os.getcwd()
-    here_path = os.path.join(here, FILENAME)
-    home = os.path.expanduser('~')
-    home_path = os.path.join(home, FILENAME)
-
     # Get config path
-    if os.path.exists(here_path):
-        config_path = here_path
-    elif os.path.exists(home_path):
-        config_path = home_path
+    if os.path.exists(HEREPATH):
+        path = HEREPATH
+    elif os.path.exists(HOMEPATH):
+        path = HOMEPATH
     else:
-        config_path = None
+        path = None
 
     # Return path
-    return config_path
+    return path
 
 
 def ensure(location='home'):
-    """Ensure an valid config file exists; writing one to location if None.
-    """
-
-    try:
-
-        # Read and return if exists
-        config = read()
-        if config is None:
-            raise ValueError('No config')
-        return config
-
-    except Exception:
-
-        # Get pathes
-        here = os.getcwd()
-        here_path = os.path.join(here, FILENAME)
-        home = os.path.expanduser('~')
-        home_path = os.path.join(home, FILENAME)
-
-        # Get config path
-        if location == 'here':
-            config_path = here_path
-        else:
-            config_path = home_path
-
-        # Create and return skeleton
-        with io.open(config_path, mode='w+t', encoding='utf-8') as stream:
-            stream.write(compat.str(json.dumps(SKELETON, indent=4)))
-            stream.seek(0)
-
-        # Return config
-        config = read()
-        return config
-
-
-def read(add_default=True):
-    """Return the contents of the active config file, or None.
+    """Ensure config file exists; writing one to location if None.
     """
 
     # Get path
     path = locate()
 
-    # No config
+    # Create
     if not path:
-        return None
 
-    try:
+        # Get config path
+        if location == 'here':
+            path = HEREPATH
+        else:
+            path = HOMEPATH
 
-        # Init config
-        config = {}
+        # Create config file
+        with io.open(path, mode='w+t', encoding='utf-8') as stream:
+            stream.write(compat.str(json.dumps(SKELETON, indent=4)))
+            stream.seek(0)
 
-        # Default config
-        if add_default:
-            default_path = os.path.join(
-                    os.path.dirname(__file__), '..', 'config.json')
-            with io.open(default_path, mode='r+t', encoding='utf-8') as stream:
-                config.update(json.loads(stream.read()))
+    # Return path
+    return path
 
-        # User config
-        with io.open(path, mode='r+t', encoding='utf-8') as stream:
+
+def read(add_default=True):
+    """Return the contents of the active config.
+    """
+
+    # Get path
+    path = locate()
+
+    # Init config
+    config = {}
+
+    # Default config
+    if add_default:
+        with io.open(DEFAULTPATH, mode='r+t', encoding='utf-8') as stream:
             config.update(json.loads(stream.read()))
 
-        # Return merged
-        return config
+    # User config
+    if path:
+        with io.open(path, mode='r+t', encoding='utf-8') as stream:
+            contents = stream.read()
+            if contents:
+                try:
+                    config.update(json.loads(contents))
+                except Exception:
+                    raise ValueError('Config file is not valid')
 
-    except Exception:
-
-        # Raise exception if can't read config
-        raise ValueError('Config file is not valid')
+    # Return merged
+    return config
 
 
 def write(**data):
@@ -118,10 +97,10 @@ def write(**data):
     config.update(data)
 
     # Get config path
-    config_path = locate()
+    path = locate()
 
     # Write updated config
-    with io.open(config_path, mode='w+t', encoding='utf-8') as stream:
+    with io.open(path, mode='w+t', encoding='utf-8') as stream:
         stream.seek(0)
         stream.truncate()
         stream.write(json.dumps(config, indent=4))

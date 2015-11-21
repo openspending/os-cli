@@ -26,7 +26,7 @@ def config(action, data):
 
     Args:
         action (str): one of 'locate', 'ensure', read', 'write'
-            - 'locate' will return the location of the currently active config
+            - 'locate' will return the location of the config file
             - 'ensure' will check a config exists and write one in $HOME if not
             - 'read' will return the currently active config
             - 'write' will add additional JSON data to config and return config
@@ -34,7 +34,10 @@ def config(action, data):
 
     # Locate
     if action == 'locate':
-        click.echo(services.config.locate())
+        path = services.config.locate()
+        if not path:
+            path = 'null'
+        click.echo(path)
 
     # Ensure
     if action == 'ensure':

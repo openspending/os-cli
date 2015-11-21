@@ -46,12 +46,15 @@ $ openspending --help
 ### Config
 
 The `openspending` CLI uses an `.openspendingrc` file to manage various settings
-related to you, the user. When using the CLI, it will look for an
-`.openspendingrc` file in one of two places, in order:
+related to you, the user. Default configuration is stored inside the package.
+User configuration will be merged with default configuration with high priority
+for user configuration.
+
+When using the CLI, it will look for an `.openspendingrc`
+file in one of two places, in order:
 
 * The current working directory
 * The executing user's $HOME
-* If not found, services that require settings from the config file will fail.
 
 A config file looks something like this:
 
@@ -65,12 +68,12 @@ A config file looks something like this:
 
 The CLI has a helper command for working with config files: `openspending config`.
 
-* `openspending config locate`: return the filepath of the currently active config as JSON,
-or null.
-* `openspending config ensure`: return the currently active config as JSON, creating
+* `openspending config locate`: return the filepath of the currently active config,
+or `null`.
+* `openspending config ensure`: return the filepath of the currently active config, creating
 a skeleton config first in $HOME if no config is found.
-* `openspending config read`: return the currently active config as JSON, or null.
-* `openspending config write '<json>'`: write additional data to config or create a new config file and return the currently active config as JSON.
+* `openspending config read`: return the currently active config as JSON.
+* `openspending config write '<json>'`: write additional data to config file or create a new config file and return the currently active config as JSON.
 
 So, to configure correctly, do the following:
 

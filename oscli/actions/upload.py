@@ -73,7 +73,7 @@ class Upload(object):
         # Make request
         res = requests.post(
                 self.config['authz_url'],
-                headers={'API-Key': self.config['api_key']},
+                headers={'API-Key': self.config.get('api_key', '')},
                 data=json.dumps(payload))
 
         # Return authorized payload
