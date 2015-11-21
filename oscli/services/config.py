@@ -33,23 +33,16 @@ def locate():
     return path
 
 
-def ensure(location='home'):
-    """Ensure config file exists; writing one to location if None.
+def ensure():
+    """Ensure config file exists; writing one to $HOME if None.
     """
 
     # Get path
     path = locate()
 
-    # Create
+    # Need to create
     if not path:
-
-        # Get config path
-        if location == 'here':
-            path = HEREPATH
-        else:
-            path = HOMEPATH
-
-        # Create config file
+        path = HOMEPATH
         with io.open(path, mode='w+t', encoding='utf-8') as stream:
             stream.write(compat.str(json.dumps(SKELETON, indent=4)))
             stream.seek(0)

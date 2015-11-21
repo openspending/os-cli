@@ -41,20 +41,20 @@ def config(action, data):
 
     # Ensure
     if action == 'ensure':
-        click.echo(json.dumps(
-            services.config.ensure(), indent=4, ensure_ascii=False))
+        path = services.config.ensure()
+        click.echo(path)
 
     # Read
     if action == 'read':
-        click.echo(json.dumps(
-            services.config.read(), indent=4, ensure_ascii=False))
+        config = services.config.read()
+        click.echo(json.dumps(config, indent=4, ensure_ascii=False))
 
     # Write
     if action == 'write':
         try:
             data = json.loads(data)
-            click.echo(json.dumps(
-                services.config.write(**data), indent=4, ensure_ascii=False))
+            config = services.config.write(**data)
+            click.echo(json.dumps(config, indent=4, ensure_ascii=False))
         except Exception:
             raise ValueError('Data is a not valid config in JSON format.')
 

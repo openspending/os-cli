@@ -44,8 +44,11 @@ class cliTest(unittest.TestCase):
         if self.openfiles:
             for file in self.openfiles:
                 file.close()
-        os.remove(self.herepath)
-        os.remove(self.homepath)
+        try:
+            os.remove(self.herepath)
+            os.remove(self.homepath)
+        except Exception:
+            pass
 
     # Helpers
 
@@ -55,10 +58,33 @@ class cliTest(unittest.TestCase):
 
     # Tests
 
-    def test_config_locate(self):
+    def test_config_locate_here(self):
         result = self.invoke('config', 'locate')
         actual = result.output.rstrip('\n')
-        expected = services.config.locate()
+        expected = self.herepath
+        self.assertEqual(actual, expected)
+
+    def test_config_locate_home(self):
+        os.remove(self.herepath)
+        result = self.invoke('config', 'locate')
+        actual = result.output.rstrip('\n')
+        expected = self.homepath
+        self.assertEqual(actual, expected)
+
+    def test_config_locate_null(self):
+        os.remove(self.herepath)
+        os.remove(self.homepath)
+        result = self.invoke('config', 'locate')
+        actual = result.output.rstrip('\n')
+        expected = 'null'
+        self.assertEqual(actual, expected)
+
+    def test_config_ensure(self):
+        os.remove(self.herepath)
+        os.remove(self.homepath)
+        result = self.invoke('config', 'ensure')
+        actual = result.output.rstrip('\n')
+        expected = self.homepath
         self.assertEqual(actual, expected)
 
     def test_config_read(self):
