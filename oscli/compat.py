@@ -25,18 +25,6 @@ if is_py2:
     basestring = basestring
     numeric_types = (int, long, float)
 
-    def csv_reader(data, dialect=csv.excel, **kwargs):
-        """Read text stream (unicode on Py2.7) as CSV.
-        """
-
-        def iterenc_utf8(data):
-            for line in data:
-                yield line.encode('utf-8')
-
-        reader = csv.reader(iterenc_utf8(data), dialect=dialect, **kwargs)
-        for row in reader:
-            yield [str(cell, 'utf-8') for cell in row]
-
 
 elif is_py3:
     from urllib import parse
@@ -48,19 +36,3 @@ elif is_py3:
     bytes = bytes
     basestring = (str, bytes)
     numeric_types = (int, float)
-
-
-def to_bytes(textstring):
-    """Convert a text string to a byte string.
-    """
-    return textstring.encode('utf-8')
-
-
-def to_builtin_str(textstring):
-    """Convert textstring to the built-in `str` on the runtime.
-    """
-
-    if is_py2:
-        return str.encode('utf-8')
-    else:
-        return str

@@ -24,8 +24,6 @@ class cliTest(unittest.TestCase):
                 os.path.dirname(__file__), '..', '..', 'examples')
         self.dp_valid = os.path.join(self.data_dir, 'dp-valid')
         self.dp_invalid = os.path.join(self.data_dir, 'dp-invalid')
-        self.data_valid = os.path.join(self.data_dir, 'data_valid.csv')
-        self.data_invalid = os.path.join(self.data_dir, 'data_invalid.csv')
 
     # Helpers
 
