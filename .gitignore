@@ -17,5 +17,7 @@ shippable/*
 .openspendingrc
 .cache
 venv/
+venv2/
+venv3/
 .tmuxp.yml
 npm-debug.log
