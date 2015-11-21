@@ -1,6 +1,5 @@
 import os
 import unittest
-from unittest.mock import Mock, patch
 from importlib import import_module
 module = import_module('oscli.helpers.is_datapackage')
 

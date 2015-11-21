@@ -3,7 +3,6 @@ import os
 import hashlib
 import unittest
 from base64 import b64encode
-from unittest.mock import Mock, patch
 from importlib import import_module
 module = import_module('oscli.helpers.get_filestats')
 
