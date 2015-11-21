@@ -3,10 +3,3 @@ mock
 nose
 coverage
 coveralls
-pytest
-pytest-cov
-git+https://github.com/mverteuil/pytest-ipdb.git
-twine
-wheel
-ipython
-ipdb

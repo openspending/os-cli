@@ -12,7 +12,10 @@ import unittest
 import tempfile
 import subprocess
 from click.testing import CliRunner
-from unittest.mock import Mock, patch
+try:
+    from unittest.mock import Mock, patch
+except ImportError:
+    from mock import Mock, patch
 import oscli
 from oscli import services
 
