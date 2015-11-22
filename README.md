@@ -208,7 +208,7 @@ on this project.
 
 ### Getting Started
 
-To activate virtual environments, install
+To activate virtual environment, install
 dependencies, add pre-commit hook to review and test code
 and get `run` command as unified developer interface:
 
