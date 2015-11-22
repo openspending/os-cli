@@ -208,8 +208,6 @@ on this project.
 
 ### Getting Started
 
-Ensure you have `Python` installed.
-
 To activate virtual environments, install
 dependencies, add pre-commit hook to review and test code
 and get `run` command as unified developer interface:
