@@ -27,4 +27,4 @@ parser.add_argument('script', help='script name to execute')
 args = parser.parse_args()
 script = package['scripts'][args.script]
 print('+ %s' % script)
-subprocess.call(script, shell=True)
+exit(subprocess.call(script, shell=True))
