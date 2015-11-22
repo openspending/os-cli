@@ -7,30 +7,22 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-import shutil
 import unittest
 import tempfile
-import subprocess
 from click.testing import CliRunner
 try:
-    from unittest.mock import Mock, patch
+    from unittest.mock import patch
 except ImportError:
-    from mock import Mock, patch
+    from mock import patch
 import oscli
 from oscli import services
 
 
-class cliTest(unittest.TestCase):
+class cli_config_Test(unittest.TestCase):
 
     # Actions
 
     def setUp(self):
-
-        # Data packages
-        self.data_dir = os.path.join(
-                os.path.dirname(__file__), '..', '..', 'examples')
-        self.dp_valid = os.path.join(self.data_dir, 'dp-valid')
-        self.dp_invalid = os.path.join(self.data_dir, 'dp-invalid')
 
         # Config pathes
         self.addCleanup(patch.stopall)
@@ -101,19 +93,3 @@ class cliTest(unittest.TestCase):
         expected = services.config.read()
         self.assertEqual(actual['key'], 'value')
         self.assertEqual(actual, expected)
-
-    def test_validate_model_valid(self):
-        result = self.invoke('validate', 'model', self.dp_valid)
-        self.assertEqual(result.exit_code, 0)
-
-    def test_validate_model_invalid(self):
-        result = self.invoke('validate', 'model', self.dp_invalid)
-        self.assertEqual(result.exit_code, 1)
-
-    def test_validate_data_valid(self):
-        result = self.invoke('validate', 'data', self.dp_valid)
-        self.assertEqual(result.exit_code, 0)
-
-    def test_validate_data_invalid(self):
-        result = self.invoke('validate', 'data', self.dp_invalid)
-        self.assertEqual(result.exit_code, 1)

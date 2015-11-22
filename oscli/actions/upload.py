@@ -50,6 +50,13 @@ class Upload(object):
             'filedata': {},
         }
 
+        # Allowed paths
+        allowed_paths = ['archive', 'scripts', 'datapackage.json']
+        for resource in self.descriptor['resources']:
+            path = resource.get('path')
+            if path:
+                allowed_paths.append(path)
+
         # Fill filedata
         for root, dirs, files in os.walk(self.path):
             for name in files:
@@ -57,6 +64,12 @@ class Upload(object):
                     continue
                 fullpath = os.path.join(root, name)
                 path = os.path.relpath(fullpath, self.path)
+                allowed = False
+                for allowed_path in allowed_paths:
+                    if path.startswith(allowed_path):
+                        allowed = True
+                if not allowed:
+                    continue
                 md5, length = helpers.get_filestats(fullpath)
                 payload['filedata'][path] = {
                     'name': name,

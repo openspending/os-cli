@@ -24,7 +24,7 @@ requirements_dev = read('requirements.dev.txt')
 package = json.loads(read('package.json'))
 
 
-# Run
+# Setup
 setup(
     name=package['name'],
     version=package['version'],

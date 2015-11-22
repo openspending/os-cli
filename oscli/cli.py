@@ -141,7 +141,7 @@ def upload(datapackage):
     if not services.config.locate():
         msg = ('Uploading requires a config file. See the configuration '
                'section of the README for more information: '
-               'https://github.com/openspending/oscli-poc')
+               'https://github.com/openspending/os-datastore-cli')
         click.echo(click.style(msg, fg='red'))
         exit(1)
 
@@ -172,9 +172,8 @@ def upload(datapackage):
         action = actions.Upload(datapackage)
         action.run()
     except Exception as exception:
-        raise
         click.echo(click.style(repr(exception), fg='red'))
-        return
+        exit(1)
 
     # Notify about uploading end
     msg = 'Your data is now live on Open Spending!'
