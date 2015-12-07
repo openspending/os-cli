@@ -1,4 +1,4 @@
 {
-    "authz_url": "https://test-openspending.herokuapp.com/datastore/",
+    "authz_url": "https://id.next.openspending.org/datastore/",
     "schema": "fiscal"
 }
