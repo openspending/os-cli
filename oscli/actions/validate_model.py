@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-import datapackage_validate
+import datapackage_validate as dv
 from .. import services
 
 
@@ -31,8 +31,10 @@ class ValidateModel(object):
     def run(self):
         """Run validation.
         """
-        valid, errors = datapackage_validate.validate(
-            self.descriptor, self.config['schema'])
-        self.success = valid
-        self.error = errors
+        try:
+            dv.validate(self.descriptor, self.config['schema'])
+            self.success = True
+        except dv.exceptions.DataPackageValidateException as e:
+            self.success = False
+            self.error = e.errors
         return self.success
