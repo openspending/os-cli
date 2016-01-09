@@ -1,6 +1,6 @@
 {
 
-  "name": "OSCLI",
+  "name": "oscli",
   "description": "A command line interface to load data into Open Spending.",
   "version": "0.1.0",
   "slug": "oscli",

@@ -1,3 +1,7 @@
+graft examples
+graft oscli
+graft tests
+
 include LICENSE.txt
 include package.json
 include pylama.ini
@@ -6,3 +10,6 @@ include requirements.dev.txt
 include requirements.txt
 include run.py
 include tox.ini
+
+global-exclude *.py[cod]
+global-exclude __pycache__/*
