@@ -56,11 +56,9 @@ file in one of two places, in order:
 * The current working directory
 * The executing user's $HOME
 
-A config file looks something like this:
+An example of the basic config file stored in `.openspendingrc`:
 
 ```
-# .openspendingrc
-
 {
     "api_key": ""
 }
