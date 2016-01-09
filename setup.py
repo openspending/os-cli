@@ -49,4 +49,10 @@ setup(
     zip_safe=False,
     keywords=package['keywords'],
     classifiers=package['classifiers'],
+    entry_points={
+        'console_scripts': [
+            'openspending = oscli:cli',
+            'os = oscli:cli'
+        ]
+    }
 )
