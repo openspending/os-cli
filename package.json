@@ -2,7 +2,7 @@
 
   "name": "OSCLI",
   "description": "A command line interface to load data into Open Spending.",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0",
   "slug": "oscli",
   "author": "Open Knowledge Foundation",
   "author_email": "info@okfn.org",
@@ -28,6 +28,7 @@
     "check": "python run.py review && python run.py test",
     "config": "less oscli/config.json",
     "review": "pylama oscli",
+    "prepare": "pip install --upgrade -r requirements.dev.txt",
     "test": "nosetests tests -sv --with-coverage --cover-package oscli"
   }
 

@@ -35,18 +35,10 @@
     "owner": "user1",
     "title": "title",
     "mapping": {
-        "measures": [
-            {
-                "name": "name",
-                "source": "source",
-                "currency": "USD"
-            }
-        ],
-        "dimensions": [
-            {
-                "name": "name"
-            }
-        ]
+        "measures": {
+        },
+        "dimensions": {
+        }
     },
     "openspending": {
         "mapping": {
