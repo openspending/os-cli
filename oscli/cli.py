@@ -172,7 +172,8 @@ def upload(datapackage):
         action = actions.Upload(datapackage)
         action.run()
     except Exception as exception:
-        click.echo(click.style(repr(exception), fg='red'))
+        click.echo(click.style(type(exception).__name__ + '\n', fg='red'))
+        click.echo(click.style(str(exception), fg='red'))
         exit(1)
 
     # Notify about uploading end

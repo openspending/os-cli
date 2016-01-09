@@ -99,50 +99,58 @@ class Upload(object):
 
         # Prepare
         session = FuturesSession()
+        responses = []
         futures = []
-        streams = []
-        uploading = True
+        files = []
 
         # Start uploading
-        for path, file in payload['filedata'].items():
+        for path, metadata in payload['filedata'].items():
             fullpath = os.path.join(self.path, path)
             headers = {
-                'Content-Length': file['length'],
-                'Content-MD5': file['md5'],
+                'Content-Length': metadata['length'],
+                'Content-MD5': metadata['md5'],
             }
-            stream = io.open(fullpath, encoding='utf-8')
-            streams.append(stream)
+            file = io.open(fullpath, mode='rb')
+            files.append(file)
             future = session.put(
-                    file['upload_url'],
-                    data=stream,
+                    metadata['upload_url'],
+                    data=file,
                     headers=headers,
-                    params=file['upload_query'],
+                    params=metadata['upload_query'],
                     background_callback=self.__notify)
             futures.append(future)
 
-        # Wait for uploads
-        while uploading:
-            uploading = not all([item.done() for item in futures])
+        # Wait uploading
+        for future in futures:
+            exception = future.exception()
+            if exception:
+                raise exception
+            response = future.result()
+            responses.append(response)
 
-        # Close streams
-        for stream in streams:
-            stream.close()
+        # Raise if errors
+        for response in responses:
+            if response.status_code != 200:
+                url = self.__clean_url(response.url)
+                message = (
+                    'Something went wrong with "%s" file.\n\n'
+                    'Here is response we\'ve received:\n\n%s' %
+                    (url, response.text))
+                raise RuntimeError(message)
+
+        # Close files
+        for file in files:
+            file.close()
 
     def __notify(self, session, response):
         """Notify about uploading to Open Spending.
         """
+        url = self.__clean_url(response.url)
+        print('FILE (status %s): %s' % (response.status_code, url))
 
-        # Prepare message
-        status = response.status_code
-        if status == 200:
-            msg = ('This file is now serving live Open Spending.')
-        else:
-            msg = ('Something went wrong with this file. Here is '
-                   'some data we received.\n\n{0}'.format(response.text))
-
-        # Prepare url
-        parsed = compat.parse.urlparse(response.url)
+    def __clean_url(self, url):
+        """Remove from url query string etc.
+        """
+        parsed = compat.parse.urlparse(url)
         url = '{0}://{1}{2}'.format(parsed.scheme, parsed.netloc, parsed.path)
-
-        # Print file status
-        print('FILE (status {0}): {1}'.format(status, url, msg))
+        return url

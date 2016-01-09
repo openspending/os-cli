@@ -21,8 +21,7 @@ def get_filestats(filepath, blocksize=65536):
         chunk = stream.read(blocksize)
         while len(chunk) > 0:
             hasher.update(chunk)
-            as_text = chunk.decode('utf-8')
-            length += len(as_text)
+            length += len(chunk)
             chunk = stream.read(blocksize)
 
     # Encode md5, stringify length
