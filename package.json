@@ -26,10 +26,10 @@
 
   "scripts": {
     "check": "python run.py review && python run.py test",
-    "config": "less oscli/config.json",
     "review": "pylama oscli",
+    "report": "coveralls",
     "prepare": "pip install --upgrade -r requirements.dev.txt",
-    "test": "nosetests tests -sv --with-coverage --cover-package oscli"
+    "test": "PACKAGE=oscli tox -v"
   }
 
 }
