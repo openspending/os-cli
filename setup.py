@@ -17,7 +17,7 @@ def read(path):
 def clean(deps):
     res = []
     for dep in deps:
-        if dep and not dep.startswith('#') and not dep.startswith('git'):
+        if dep and not dep.startswith('#') and not dep.startswith('git') and not dep.startswith('-r'):
             res.append(dep)
     return res
 
@@ -44,7 +44,7 @@ setup(
     packages=find_packages(exclude=['examples', 'tests']),
     package_dir={package['slug']: package['slug']},
     install_requires=requirements,
-    tests_require=requirements_dev,
+    tests_require=requirements_dev + requirements,
     test_suite='nose.collector',
     zip_safe=False,
     keywords=package['keywords'],
